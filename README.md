@@ -138,7 +138,7 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 
  1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
  2. [`Earle Philhower's arduino-pico core v2.4.0+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
- 3. [`AsyncTCP_RP2040W library v1.0.0+`](https://github.com/khoih-prog/AsyncTCP_RP2040W) for RASPBERRY_PI_PICO_W with CYW43439 WiFi. [To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/AsyncTCP_RP2040W.svg?)](https://www.ardu-badge.com/AsyncTCP_RP2040W)
+ 3. [`AsyncTCP_RP2040W library v1.0.0+`](https://github.com/khoih-prog/AsyncTCP_RP2040W) for RASPBERRY_PI_PICO_W with CYW43439 WiFi. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/AsyncTCP_RP2040W.svg?)](https://www.ardu-badge.com/AsyncTCP_RP2040W)
 
 ---
 
@@ -1680,9 +1680,9 @@ You can also change the debugging level `_RP2040W_AWS_LOGLEVEL_` from 0 to 4 in 
 
 ### Troubleshooting
 
-If you get compilation errors, more often than not, you may need to install a newer version of Arduino IDE, the Arduino `mbed_portenta` core or depending libraries.
+If you get compilation errors, more often than not, you may need to install a newer version of Arduino IDE, the Arduino `arduino-pico` core or depending libraries.
 
-Sometimes, the library will only work if you update the `mbed_portenta` core to the latest version because I'm always using the latest cores /libraries.
+Sometimes, the library will only work if you update the `arduino-pico` core to the latest version because I'm always using the latest cores /libraries.
 
 
 ---
