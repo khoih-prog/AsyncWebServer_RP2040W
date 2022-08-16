@@ -135,6 +135,10 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 
 1. **RASPBERRY_PI_PICO_W with CYW43439 WiFi** using [**arduino-pico core v2.4.0+**](https://github.com/earlephilhower/arduino-pico)
 
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/RP2040W-pinout.svg">
+</p>
+
 ---
 ---
 
@@ -1420,233 +1424,13 @@ build_flags =
 
 ### Example [Async_AdvancedWebServer](examples/Async_AdvancedWebServer)
 
-```cpp
-#if !( defined(ARDUINO_RASPBERRY_PI_PICO_W) )
-  #error For RASPBERRY_PI_PICO_W only
-#endif
-
-#define _RP2040W_AWS_LOGLEVEL_     1
-
-#include <AsyncWebServer_RP2040W.h>
-
-char ssid[] = "your_ssid";        // your network SSID (name)
-char pass[] = "12345678";         // your network password (use for WPA, or use as key for WEP), length must be 8+
-
-int status = WL_IDLE_STATUS;
-
-AsyncWebServer    server(80);
-
-int reqCount = 0;                // number of requests received
-
-#define LED_OFF             HIGH
-#define LED_ON              LOW
-
-
-#define BUFFER_SIZE         512
-char temp[BUFFER_SIZE];
-
-void handleRoot(AsyncWebServerRequest *request)
-{
-  digitalWrite(LED_BUILTIN, LED_ON);
-
-  int sec = millis() / 1000;
-  int min = sec / 60;
-  int hr = min / 60;
-  int day = hr / 24;
-
-  snprintf(temp, BUFFER_SIZE - 1,
-           "<html>\
-<head>\
-<meta http-equiv='refresh' content='5'/>\
-<title>AsyncWebServer-%s</title>\
-<style>\
-body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
-</style>\
-</head>\
-<body>\
-<h2>AsyncWebServer_RP2040W!</h2>\
-<h3>running WiFi on %s</h3>\
-<p>Uptime: %d d %02d:%02d:%02d</p>\
-<img src=\"/test.svg\" />\
-</body>\
-</html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
-
-  request->send(200, "text/html", temp);
-
-  digitalWrite(LED_BUILTIN, LED_OFF);
-}
-
-void handleNotFound(AsyncWebServerRequest *request)
-{
-  digitalWrite(LED_BUILTIN, LED_ON);
-  String message = "File Not Found\n\n";
-
-  message += "URI: ";
-  message += request->url();
-  message += "\nMethod: ";
-  message += (request->method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += request->args();
-  message += "\n";
-
-  for (uint8_t i = 0; i < request->args(); i++)
-  {
-    message += " " + request->argName(i) + ": " + request->arg(i) + "\n";
-  }
-
-  request->send(404, "text/plain", message);
-  digitalWrite(LED_BUILTIN, LED_OFF);
-}
-
-void drawGraph(AsyncWebServerRequest *request)
-{
-  String out;
-
-  out.reserve(3000);
-  char temp[70];
-
-  out += "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n";
-  out += "<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"2\" stroke=\"rgb(0, 0, 0)\" />\n";
-  out += "<g stroke=\"blue\">\n";
-  int y = rand() % 130;
-
-  for (int x = 10; x < 300; x += 10)
-  {
-    int y2 = rand() % 130;
-    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"2\" />\n", x, 140 - y, x + 10, 140 - y2);
-    out += temp;
-    y = y2;
-  }
-  out += "</g>\n</svg>\n";
-
-  request->send(200, "image/svg+xml", out);
-}
-
-void printWifiStatus()
-{
-  // print the SSID of the network you're attached to:
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
-
-  // print your board's IP address:
-  IPAddress ip = WiFi.localIP();
-  Serial.print("Local IP Address: ");
-  Serial.println(ip);
-
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
-}
-
-void setup()
-{
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LED_OFF);
-
-  Serial.begin(115200);
-  while (!Serial);
-
-  delay(200);
-
-  Serial.print("\nStart Async_AdvancedWebServer on "); Serial.print(BOARD_NAME);
-  Serial.print(" with "); Serial.println(SHIELD_TYPE);
-  Serial.println(ASYNCTCP_RP2040W_VERSION);
-  Serial.println(ASYNC_WEBSERVER_RP2040W_VERSION);
-
-  ///////////////////////////////////
-
-  // check for the WiFi module:
-  if (WiFi.status() == WL_NO_MODULE)
-  {
-    Serial.println("Communication with WiFi module failed!");
-    // don't continue
-    while (true);
-  }
-
-  Serial.print(F("Connecting to SSID: "));
-  Serial.println(ssid);
-
-  status = WiFi.begin(ssid, pass);
-
-  delay(1000);
-   
-  // attempt to connect to WiFi network
-  while ( status != WL_CONNECTED)
-  {
-    delay(500);
-        
-    // Connect to WPA/WPA2 network
-    status = WiFi.status();
-  }
-
-  printWifiStatus();
-
-  ///////////////////////////////////
-
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
-    handleRoot(request);
-  });
-
-  server.on("/test.svg", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
-    drawGraph(request);
-  });
-
-  server.on("/inline", [](AsyncWebServerRequest * request)
-  {
-    request->send(200, "text/plain", "This works as well");
-  });
-
-  server.onNotFound(handleNotFound);
-
-  server.begin();
-  
-  Serial.print(F("HTTP EthernetWebServer is @ IP : "));
-  Serial.println(WiFi.localIP());
-}
-
-void heartBeatPrint()
-{
-  static int num = 1;
-
-  Serial.print(F("."));
-
-  if (num == 80)
-  {
-    Serial.println();
-    num = 1;
-  }
-  else if (num++ % 10 == 0)
-  {
-    Serial.print(F(" "));
-  }
-}
-
-void check_status()
-{
-  static unsigned long checkstatus_timeout = 0;
-
-#define STATUS_CHECK_INTERVAL     10000L
-
-  // Send status report every STATUS_REPORT_INTERVAL (60) seconds: we don't need to send updates frequently if there is no status change.
-  if ((millis() > checkstatus_timeout) || (checkstatus_timeout == 0))
-  {
-    heartBeatPrint();
-    checkstatus_timeout = millis() + STATUS_CHECK_INTERVAL;
-  }
-}
-
-void loop()
-{
-  check_status();
-}
-```
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/cb36807f0f16409d063f5d1925a012beda109fa6/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L257
 
 You can access the Async Advanced WebServer @ the server IP
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer.png">
+</p>
 
 ---
 ---
@@ -1655,18 +1439,169 @@ You can access the Async Advanced WebServer @ the server IP
 
 #### 1. Async_AdvancedWebServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi
 
-Following is the debug terminal when running example [Async_AdvancedWebServer](examples/Async_AdvancedWebServer) on RASPBERRY_PI_PICO_W using CYW43439 WiFi to demonstrate the operation of AsyncWebServer_RP2040W, based on this [AsyncTCP_RP2040W Library](https://github.com/khoih-prog/AsyncTCP_RP2040W).
+Following is the debug terminal when running example [Async_AdvancedWebServer](examples/Async_AdvancedWebServer) on RASPBERRY_PI_PICO_W using CYW43439 WiFi to demonstrate the operation of AsyncWebServer_RP2040W, based on this [AsyncTCP_RP2040W Library](https://github.com/khoih-prog/AsyncTCP_RP2040W)
+
 
 ```
 Start Async_AdvancedWebServer on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.0.0
-AsyncWebServer_RP2040W v1.0.0
+AsyncWebServer_RP2040W v1.0.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
-Local IP Address: 192.168.2.94
-signal strength (RSSI):-31 dBm
-HTTP EthernetWebServer is @ IP : 192.168.2.94
-..........
+Local IP Address: 192.168.2.180
+HTTP EthernetWebServer is @ IP : 192.168.2.180
+.......... .......... .......... .......... .......... .......... .......... ..........
+.......... .......... .......... .......... .......... ...
+```
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer.png">
+</p>
+
+---
+
+#### 2. WebClient on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is debug terminal output when running example [WebClient](examples/WebClient) on on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+
+```
+Start WebClient on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.0.0
+AsyncWebServer_RP2040W v1.0.1
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.180
+
+Starting connection to server...
+Connected to server
+HTTP/1.1 200 OK
+Date: Tue, 16 Aug 2022 01:06:29 GMT
+Content-Type: text/plain
+Content-Length: 2263
+Connection: close
+x-amz-id-2: eCCq3bjp3ZIWsEqS9Timqjnr4liaTs2BY2giqfjPt5fRD9UPsPHZgIkhWMmbgfXHm7Rp6g1V1EE=
+x-amz-request-id: V2X8BFCZS6E01EA4
+Last-Modified: Wed, 23 Feb 2022 14:56:42 GMT
+ETag: "667cf48afcc12c38c8c1637947a04224"
+CF-Cache-Status: DYNAMIC
+Report-To: {"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=VUTYgtuhcRcBq%2F%2Bj6oRv60yx72aRGR6Z0yNupDNmxvSYpiwM6bHwRA8Xteiu3GM0pjxLcOGB5apbpNOkljur%2FuuNTU%2FnfcLZZc8zF7i8nrDyeplpCRDuJ9oz0HCZKSI%3D"}],"group":"cf-nel","max_age":604800}
+NEL: {"success_fraction":0,"report_to":"cf-nel","max_age":604800}
+Server: cloudflare
+CF-RAY: 73b64482ad06a1e0-YYZ
+alt-svc: h3=":443"; ma=86400, h3-29=":443"; ma=86400
+
+
+           `:;;;,`                      .:;;:.           
+        .;;;;;;;;;;;`                :;;;;;;;;;;:     TM 
+      `;;;;;;;;;;;;;;;`            :;;;;;;;;;;;;;;;      
+     :;;;;;;;;;;;;;;;;;;         `;;;;;;;;;;;;;;;;;;     
+    ;;;;;;;;;;;;;;;;;;;;;       .;;;;;;;;;;;;;;;;;;;;    
+   ;;;;;;;;:`   `;;;;;;;;;     ,;;;;;;;;.`   .;;;;;;;;   
+  .;;;;;;,         :;;;;;;;   .;;;;;;;          ;;;;;;;  
+  ;;;;;;             ;;;;;;;  ;;;;;;,            ;;;;;;. 
+ ,;;;;;               ;;;;;;.;;;;;;`              ;;;;;; 
+ ;;;;;.                ;;;;;;;;;;;`      ```       ;;;;;`
+ ;;;;;                  ;;;;;;;;;,       ;;;       .;;;;;
+`;;;;:                  `;;;;;;;;        ;;;        ;;;;;
+,;;;;`    `,,,,,,,,      ;;;;;;;      .,,;;;,,,     ;;;;;
+:;;;;`    .;;;;;;;;       ;;;;;,      :;;;;;;;;     ;;;;;
+:;;;;`    .;;;;;;;;      `;;;;;;      :;;;;;;;;     ;;;;;
+.;;;;.                   ;;;;;;;.        ;;;        ;;;;;
+ ;;;;;                  ;;;;;;;;;        ;;;        ;;;;;
+ ;;;;;                 .;;;;;;;;;;       ;;;       ;;;;;,
+ ;;;;;;               `;;;;;;;;;;;;                ;;;;; 
+ `;;;;;,             .;;;;;; ;;;;;;;              ;;;;;; 
+  ;;;;;;:           :;;;;;;.  ;;;;;;;            ;;;;;;  
+   ;;;;;;;`       .;;;;;;;,    ;;;;;;;;        ;;;;;;;:  
+    ;;;;;;;;;:,:;;;;;;;;;:      ;;;;;;;;;;:,;;;;;;;;;;   
+    `;;;;;;;;;;;;;;;;;;;.        ;;;;;;;;;;;;;;;;;;;;    
+      ;;;;;;;;;;;;;;;;;           :;;;;;;;;;;;;;;;;:     
+       ,;;;;;;;;;;;;;,              ;;;;;;;;;;;;;;       
+         .;;;;;;;;;`                  ,;;;;;;;;:         
+                                                         
+                                                         
+                                                         
+                                                         
+    ;;;   ;;;;;`  ;;;;:  .;;  ;; ,;;;;;, ;;. `;,  ;;;;   
+    ;;;   ;;:;;;  ;;;;;; .;;  ;; ,;;;;;: ;;; `;, ;;;:;;  
+   ,;:;   ;;  ;;  ;;  ;; .;;  ;;   ,;,   ;;;,`;, ;;  ;;  
+   ;; ;:  ;;  ;;  ;;  ;; .;;  ;;   ,;,   ;;;;`;, ;;  ;;. 
+   ;: ;;  ;;;;;:  ;;  ;; .;;  ;;   ,;,   ;;`;;;, ;;  ;;` 
+  ,;;;;;  ;;`;;   ;;  ;; .;;  ;;   ,;,   ;; ;;;, ;;  ;;  
+  ;;  ,;, ;; .;;  ;;;;;:  ;;;;;: ,;;;;;: ;;  ;;, ;;;;;;  
+  ;;   ;; ;;  ;;` ;;;;.   `;;;:  ,;;;;;, ;;  ;;,  ;;;;   
+
+Disconnecting from server...
+```
+
+---
+
+#### 3. MQTTClient_Auth on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is debug terminal output when running example [MQTTClient_Auth](examples/MQTTClient_Auth) on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+
+```
+Start MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.0.0
+AsyncWebServer_RP2040W v1.0.1
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.180
+Attempting MQTT connection to broker.emqx.io...connected
+Message Send : MQTT_Pub => Hello from MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+Message Send : MQTT_Pub => Hello from MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+```
+
+
+---
+
+#### 4. MQTTClient_Basic on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is debug terminal output when running example [MQTTClient_Basic](examples/MQTTClient_Basic) on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+```
+Start MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.0.0
+AsyncWebServer_RP2040W v1.0.1
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.180
+Attempting MQTT connection to broker.emqx.io...connected
+Message Send : MQTT_Pub => Hello from MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+Message arrived [MQTT_Pub] Hello from MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+Message Send : MQTT_Pub => Hello from MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+Message arrived [MQTT_Pub] Hello from MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+Message Send : MQTT_Pub => Hello from MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+```
+
+---
+
+#### 5. MQTT_ThingStream on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is debug terminal output when running example [MQTT_ThingStream](examples/MQTT_ThingStream) on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+```
+Start MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.0.0
+AsyncWebServer_RP2040W v1.0.1
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.180
+***************************************
+RP2040W_Pub
+***************************************
+Attempting MQTT connection to broker.emqx.io
+...connected
+Published connection message successfully!
+Subcribed to: RP2040W_Sub
+MQTT Message Send : RP2040W_Pub => Hello from MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+MQTT Message receive [RP2040W_Pub] Hello from MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+MQTT Message Send : RP2040W_Pub => Hello from MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+MQTT Message receive [RP2040W_Pub] Hello from MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 ```
 
 ---
