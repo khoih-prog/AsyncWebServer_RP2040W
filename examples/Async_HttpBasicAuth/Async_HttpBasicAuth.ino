@@ -26,7 +26,7 @@ int status = WL_IDLE_STATUS;
 AsyncWebServer    server(80);
 
 const char* www_username = "admin";
-const char* www_password = "portenta";
+const char* www_password = "rp2040w";
 
 void printWifiStatus()
 {
@@ -38,12 +38,6 @@ void printWifiStatus()
   IPAddress ip = WiFi.localIP();
   Serial.print("Local IP Address: ");
   Serial.println(ip);
-
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
 }
 
 void setup()
