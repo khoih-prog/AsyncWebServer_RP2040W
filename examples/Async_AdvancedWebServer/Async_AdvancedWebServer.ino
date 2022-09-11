@@ -55,9 +55,8 @@ AsyncWebServer    server(80);
 
 int reqCount = 0;                // number of requests received
 
-#define LED_OFF             HIGH
-#define LED_ON              LOW
-
+#define LED_OFF             LOW
+#define LED_ON              HIGH
 
 #define BUFFER_SIZE         512
 char temp[BUFFER_SIZE];
@@ -122,6 +121,8 @@ void drawGraph(AsyncWebServerRequest *request)
   out.reserve(3000);
   char temp[70];
 
+  digitalWrite(LED_BUILTIN, LED_ON);
+
   out += "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n";
   out += "<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"2\" stroke=\"rgb(0, 0, 0)\" />\n";
   out += "<g stroke=\"blue\">\n";
@@ -137,6 +138,8 @@ void drawGraph(AsyncWebServerRequest *request)
   out += "</g>\n</svg>\n";
 
   request->send(200, "image/svg+xml", out);
+
+  digitalWrite(LED_BUILTIN, LED_OFF);
 }
 
 void printWifiStatus()

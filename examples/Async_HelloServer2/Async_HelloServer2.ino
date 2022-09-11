@@ -27,8 +27,8 @@ int status = WL_IDLE_STATUS;
 
 AsyncWebServer    server(80);
 
-#define LED_OFF             HIGH
-#define LED_ON              LOW
+#define LED_OFF             LOW
+#define LED_ON              HIGH
 
 #define BUFFER_SIZE         64
 char temp[BUFFER_SIZE];

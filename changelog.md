@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.0.2](#Release-v102)
   * [Release v1.0.1](#Release-v101)
   * [Initial Release v1.0.0](#Initial-Release-v100)
 
@@ -18,6 +19,10 @@
 ---
 
 ## Changelog
+
+### Release v1.0.2
+
+1. Fix LED bug in examples
 
 ### Release v1.0.1
 
