@@ -169,7 +169,7 @@ void setup()
 
   delay(200);
 
-  Serial.print("\nStart Async_AdvancedWebServer on "); Serial.print(BOARD_NAME);
+  Serial.print("\nStart Async_AdvancedWebServer_Country on "); Serial.print(BOARD_NAME);
   Serial.print(" with "); Serial.println(SHIELD_TYPE);
   Serial.println(ASYNCTCP_RP2040W_VERSION);
   Serial.println(ASYNC_WEBSERVER_RP2040W_VERSION);
