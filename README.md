@@ -94,6 +94,7 @@
   * [3. MQTTClient_Auth on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#3-MQTTClient_Auth-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [4. MQTTClient_Basic on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#4-MQTTClient_Basic-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [5. MQTT_ThingStream on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#5-MQTT_ThingStream-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
+  * [6. Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#6-Async_AdvancedWebServer_Country-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
@@ -1615,9 +1616,11 @@ MQTT Message Send : RP2040W_Pub => Hello from MQTT_ThingStream on RASPBERRY_PI_P
 MQTT Message receive [RP2040W_Pub] Hello from MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 ```
 
+---
+
 #### 6. Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W using CYW43439 WiFi
 
-Following is the debug terminal when running example [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) on RASPBERRY_PI_PICO_W using CYW43439 WiFi to demonstrate the operation of AsyncWebServer_RP2040W, based on this [AsyncTCP_RP2040W Library](https://github.com/khoih-prog/AsyncTCP_RP2040W) and to display programmed country-code
+Following is the debug terminal when running example [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) on RASPBERRY_PI_PICO_W using CYW43439 WiFi to demonstrate the operation of AsyncWebServer_RP2040W, based on this [AsyncTCP_RP2040W Library](https://github.com/khoih-prog/AsyncTCP_RP2040W) and to display programmed `country-code`
 
 
 ```
