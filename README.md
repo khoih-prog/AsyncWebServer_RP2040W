@@ -86,6 +86,7 @@
   * [ 8. **MQTT_ThingStream**](examples/MQTT_ThingStream)
   * [ 9. WebClient](examples/WebClient)
   * [10. WebClientRepeating](examples/WebClientRepeating)
+  * [11. Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
 * [Example Async_AdvancedWebServer](#Example-Async_AdvancedWebServer)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. Async_AdvancedWebServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#1-Async_AdvancedWebServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
@@ -149,8 +150,8 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 ## Prerequisites
 
  1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
- 2. [`Earle Philhower's arduino-pico core v2.5.2+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
- 3. [`AsyncTCP_RP2040W library v1.0.0+`](https://github.com/khoih-prog/AsyncTCP_RP2040W) for RASPBERRY_PI_PICO_W with CYW43439 WiFi. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/AsyncTCP_RP2040W.svg?)](https://www.ardu-badge.com/AsyncTCP_RP2040W)
+ 2. [`Earle Philhower's arduino-pico core v2.5.4+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
+ 3. [`AsyncTCP_RP2040W library v1.0.0+`](https://github.com/khoih-prog/AsyncTCP_RP2040W) for RASPBERRY_PI_PICO_W with CYW43439 WiFi. [![GitHub release](https://img.shields.io/github/release/khoih-prog/AsyncTCP_RP2040W.svg)](https://github.com/khoih-prog/AsyncTCP_RP2040W/releases/latest). To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/AsyncTCP_RP2040W.svg?)](https://www.ardu-badge.com/AsyncTCP_RP2040W)
 
 ---
 
@@ -1421,6 +1422,7 @@ build_flags =
  8. [**MQTT_ThingStream**](examples/MQTT_ThingStream)
  9. [WebClient](examples/WebClient)
 10. [WebClientRepeating](examples/WebClientRepeating)
+11. [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
 
 
 ---
@@ -1449,10 +1451,11 @@ Following is the debug terminal when running example [Async_AdvancedWebServer](e
 ```
 Start Async_AdvancedWebServer on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.0.0
-AsyncWebServer_RP2040W v1.0.2
+AsyncWebServer_RP2040W v1.0.3
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
+Country code: CA         <================ Country code CA for CYW43_COUNTRY_CANADA
 HTTP EthernetWebServer is @ IP : 192.168.2.180
 .......... .......... .......... .......... .......... .......... .......... ..........
 .......... .......... .......... .......... .......... ...
@@ -1472,10 +1475,11 @@ Following is debug terminal output when running example [WebClient](examples/Web
 ```
 Start WebClient on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.0.0
-AsyncWebServer_RP2040W v1.0.2
+AsyncWebServer_RP2040W v1.0.3
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
+Country code: CA         <================ Country code CA for CYW43_COUNTRY_CANADA
 
 Starting connection to server...
 Connected to server
@@ -1549,10 +1553,11 @@ Following is debug terminal output when running example [MQTTClient_Auth](exampl
 ```
 Start MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.0.0
-AsyncWebServer_RP2040W v1.0.2
+AsyncWebServer_RP2040W v1.0.3
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
+Country code: CA         <================ Country code CA for CYW43_COUNTRY_CANADA
 Attempting MQTT connection to broker.emqx.io...connected
 Message Send : MQTT_Pub => Hello from MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
@@ -1570,10 +1575,11 @@ Following is debug terminal output when running example [MQTTClient_Basic](examp
 ```
 Start MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.0.0
-AsyncWebServer_RP2040W v1.0.2
+AsyncWebServer_RP2040W v1.0.3
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
+Country code: CA         <================ Country code CA for CYW43_COUNTRY_CANADA
 Attempting MQTT connection to broker.emqx.io...connected
 Message Send : MQTT_Pub => Hello from MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 Message arrived [MQTT_Pub] Hello from MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
@@ -1591,10 +1597,11 @@ Following is debug terminal output when running example [MQTT_ThingStream](examp
 ```
 Start MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.0.0
-AsyncWebServer_RP2040W v1.0.2
+AsyncWebServer_RP2040W v1.0.3
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
+Country code: CA         <================ Country code CA for CYW43_COUNTRY_CANADA
 ***************************************
 RP2040W_Pub
 ***************************************
@@ -1607,6 +1614,29 @@ MQTT Message receive [RP2040W_Pub] Hello from MQTT_ThingStream on RASPBERRY_PI_P
 MQTT Message Send : RP2040W_Pub => Hello from MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 MQTT Message receive [RP2040W_Pub] Hello from MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 ```
+
+#### 6. Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is the debug terminal when running example [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) on RASPBERRY_PI_PICO_W using CYW43439 WiFi to demonstrate the operation of AsyncWebServer_RP2040W, based on this [AsyncTCP_RP2040W Library](https://github.com/khoih-prog/AsyncTCP_RP2040W) and to display programmed country-code
+
+
+```
+Start Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.0.0
+AsyncWebServer_RP2040W v1.0.3
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.180
+Country code: CA         <================ Country code CA for CYW43_COUNTRY_CANADA
+HTTP EthernetWebServer is @ IP : 192.168.2.180
+....
+```
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Country.png">
+</p>
+
+---
 
 ---
 ---
@@ -1646,6 +1676,8 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
 
  1. Add support to RASPBERRY_PI_PICO_W using CYW43439 WiFi
  2. Add Table of Contents
+ 3. Modify examples to display `country-code`
+ 4. Add tempo method to modify `arduino-pico` core to change `country-code`
 
 ---
 ---

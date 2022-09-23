@@ -10,6 +10,11 @@
   Licensed under GPLv3 license
  *****************************************************************************************************************************/
 
+// See the list of country codes in
+// https://github.com/earlephilhower/cyw43-driver/blob/02533c10a018c6550e9f66f7699e21356f5e4609/src/cyw43_country.h#L59-L111
+// To modify https://github.com/earlephilhower/arduino-pico/blob/master/variants/rpipicow/picow_init.cpp
+// Check https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/3#issuecomment-1255676644
+
 #include "defines.h"
 
 char server[] = "arduino.tips";
@@ -60,6 +65,16 @@ void printWifiStatus()
   IPAddress ip = WiFi.localIP();
   Serial.print("Local IP Address: ");
   Serial.println(ip);
+
+  // print your board's country code 
+  // #define CYW43_COUNTRY(A, B, REV) ((unsigned char)(A) | ((unsigned char)(B) << 8) | ((REV) << 16))
+  uint32_t myCountryCode = cyw43_arch_get_country_code(); 
+  char countryCode[3] = { 0, 0, 0 };
+  
+  countryCode[0] = myCountryCode & 0xFF;
+  countryCode[1] = (myCountryCode >> 8) & 0xFF;
+
+  Serial.print("Country code: "); Serial.println(countryCode);
 }
 
 void setup()

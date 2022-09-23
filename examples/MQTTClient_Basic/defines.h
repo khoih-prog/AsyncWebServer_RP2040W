@@ -20,6 +20,12 @@
 
 #define _RP2040W_AWS_LOGLEVEL_     1
 
+///////////////////////////////////////////////////////////////////
+
+#include <pico/cyw43_arch.h>
+
+///////////////////////////////////////////////////////////////////
+
 #include <AsyncWebServer_RP2040W.h>
 
 char ssid[] = "your_ssid";        // your network SSID (name)

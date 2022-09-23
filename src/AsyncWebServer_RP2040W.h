@@ -9,13 +9,14 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.0.2
+  Version: 1.0.3
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
   1.0.1   K Hoang      15/08/2022 Fix bug in examples, `library.json`
   1.0.2   K Hoang      15/08/2022 Fix LED bug in examples
+  1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
  *****************************************************************************************************************************/
  
 #ifndef _RP2040W_ASYNC_WEBSERVER_H_
@@ -29,13 +30,13 @@
     
 #endif
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.0.2"
+#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.0.3"
 
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MAJOR     1
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MINOR     0
-#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     2
+#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     3
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1000002
+#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1000003
 
 #ifndef RP2040W_AWS_UNUSED
   #define RP2040W_AWS_UNUSED(x)       (void)(x)
