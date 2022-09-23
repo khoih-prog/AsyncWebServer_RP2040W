@@ -62,6 +62,8 @@ char pass[] = "12345678";         // your network password (use for WPA, or use 
 
 int status = WL_IDLE_STATUS;
 
+char countryCode[3] = { 0, 0, 0 };
+
 AsyncWebServer    server(80);
 
 int reqCount = 0;                // number of requests received
@@ -91,12 +93,12 @@ body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Col
 </style>\
 </head>\
 <body>\
-<h2>AsyncWebServer_RP2040W!</h2>\
+<h2>AsyncWebServer_RP2040W for %s!</h2>\
 <h3>running WiFi on %s</h3>\
 <p>Uptime: %d d %02d:%02d:%02d</p>\
 <img src=\"/test.svg\" />\
 </body>\
-</html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
+</html>", BOARD_NAME, countryCode, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
 
   request->send(200, "text/html", temp);
 
@@ -167,7 +169,6 @@ void printWifiStatus()
   // print your board's country code 
   // #define CYW43_COUNTRY(A, B, REV) ((unsigned char)(A) | ((unsigned char)(B) << 8) | ((REV) << 16))
   uint32_t myCountryCode = cyw43_arch_get_country_code(); 
-  char countryCode[3] = { 0, 0, 0 };
   
   countryCode[0] = myCountryCode & 0xFF;
   countryCode[1] = (myCountryCode >> 8) & 0xFF;
