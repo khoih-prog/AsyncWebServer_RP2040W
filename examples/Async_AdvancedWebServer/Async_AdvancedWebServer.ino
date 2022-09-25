@@ -129,7 +129,7 @@ void drawGraph(AsyncWebServerRequest *request)
 {
   String out;
 
-  out.reserve(3000);
+  out.reserve(4000);
   char temp[70];
 
   digitalWrite(LED_BUILTIN, LED_ON);

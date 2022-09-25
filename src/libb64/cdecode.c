@@ -12,7 +12,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.0.3
+  Version: 1.1.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -20,6 +20,7 @@
   1.0.1   K Hoang      15/08/2022 Fix bug in examples, `library.json`
   1.0.2   K Hoang      15/08/2022 Fix LED bug in examples
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
+  1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
  *****************************************************************************************************************************/
 
 #include "cdecode.h"

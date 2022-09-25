@@ -47,7 +47,8 @@
   #error For RASPBERRY_PI_PICO_W only
 #endif
 
-#define _RP2040W_AWS_LOGLEVEL_     1
+#define _ASYNCTCP_RP2040W_LOGLEVEL_     4
+#define _RP2040W_AWS_LOGLEVEL_          3
 
 ///////////////////////////////////////////////////////////////////
 
@@ -131,7 +132,7 @@ void drawGraph(AsyncWebServerRequest *request)
 {
   String out;
 
-  out.reserve(3000);
+  out.reserve(4000);
   char temp[70];
 
   digitalWrite(LED_BUILTIN, LED_ON);

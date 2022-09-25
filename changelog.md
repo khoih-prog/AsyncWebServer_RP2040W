@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.1.0](#Release-v110)
   * [Release v1.0.3](#Release-v103)
   * [Release v1.0.2](#Release-v102)
   * [Release v1.0.1](#Release-v101)
@@ -20,6 +21,11 @@
 ---
 
 ## Changelog
+
+### Release v1.1.0
+
+1. Fix issue with slow browsers or network. Check [Target stops responding after variable time when using Firefox on Windows 10 #3](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/3)
+
 
 ### Release v1.0.3
 
