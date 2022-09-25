@@ -1431,7 +1431,7 @@ build_flags =
 
 ### Example [Async_AdvancedWebServer](examples/Async_AdvancedWebServer)
 
-https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/4ba83dfb689b6332f588f45be7cc63369640b73a/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L281
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/740a15bfd9a82674a47204d11c47fe317815aea1/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L281
 
 You can access the Async Advanced WebServer @ the server IP
 
