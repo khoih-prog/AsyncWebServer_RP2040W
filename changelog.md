@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.1.1](#Release-v111)
   * [Release v1.1.0](#Release-v110)
   * [Release v1.0.3](#Release-v103)
   * [Release v1.0.2](#Release-v102)
@@ -21,6 +22,10 @@
 ---
 
 ## Changelog
+
+### Release v1.1.1
+
+1. To avoid the issue `CRC doesn't match, file is corrupted` with Arduino IDE Library Manager installation of v1.1.0
 
 ### Release v1.1.0
 
