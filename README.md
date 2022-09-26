@@ -95,6 +95,7 @@
   * [4. MQTTClient_Basic on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#4-MQTTClient_Basic-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [5. MQTT_ThingStream on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#5-MQTT_ThingStream-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [6. Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#6-Async_AdvancedWebServer_Country-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
+  * [7. Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#7-Async_AdvancedWebServer_favicon-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
