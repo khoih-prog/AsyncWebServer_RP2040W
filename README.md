@@ -1,6 +1,5 @@
 # AsyncWebServer_RP2040W
 
-[![arduino-library-badge](https://www.ardu-badge.com/badge/AsyncWebServer_RP2040W.svg?)](https://www.ardu-badge.com/AsyncWebServer_RP2040W)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/AsyncWebServer_RP2040W.svg)](https://github.com/khoih-prog/AsyncWebServer_RP2040W/releases)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/AsyncWebServer_RP2040W.svg)](http://github.com/khoih-prog/AsyncWebServer_RP2040W/issues)
@@ -87,6 +86,7 @@
   * [ 9. WebClient](examples/WebClient)
   * [10. WebClientRepeating](examples/WebClientRepeating)
   * [11. Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
+  * [12. Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
 * [Example Async_AdvancedWebServer](#Example-Async_AdvancedWebServer)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. Async_AdvancedWebServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#1-Async_AdvancedWebServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
@@ -1424,6 +1424,7 @@ build_flags =
  9. [WebClient](examples/WebClient)
 10. [WebClientRepeating](examples/WebClientRepeating)
 11. [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
+12. [Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
 
 
 ---
@@ -1452,7 +1453,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer](e
 ```
 Start Async_AdvancedWebServer on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.1.2
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1476,7 +1477,7 @@ Following is debug terminal output when running example [WebClient](examples/Web
 ```
 Start WebClient on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.1.2
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1554,7 +1555,7 @@ Following is debug terminal output when running example [MQTTClient_Auth](exampl
 ```
 Start MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.1.2
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1576,7 +1577,7 @@ Following is debug terminal output when running example [MQTTClient_Basic](examp
 ```
 Start MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.1.2
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1598,7 +1599,7 @@ Following is debug terminal output when running example [MQTT_ThingStream](examp
 ```
 Start MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.1.2
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1626,7 +1627,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_Co
 ```
 Start Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.1.2
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1651,6 +1652,40 @@ HTTP EthernetWebServer is @ IP : 192.168.2.180
     <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Country_Firefox.png">
 </p>
 
+
+---
+
+#### 7. Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is the debug terminal when running example [Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) on RASPBERRY_PI_PICO_W using CYW43439 WiFi to demonstrate the operation of AsyncWebServer_RP2040W, based on this [AsyncTCP_RP2040W Library](https://github.com/khoih-prog/AsyncTCP_RP2040W) and to display `favicon.ico`, which many browsers are interested.
+
+
+```
+14:22:06.632 -> Start Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+14:22:06.632 -> AsyncTCP_RP2040W v1.1.0
+14:22:06.632 -> AsyncWebServer_RP2040W v1.1.2
+14:22:06.632 -> Connecting to SSID: HueNet1
+14:22:13.328 -> SSID: HueNet1
+14:22:13.328 -> Local IP Address: 192.168.2.180
+14:22:13.328 -> Country code: XX
+14:22:13.328 -> HTTP EthernetWebServer is @ IP : 192.168.2.180
+14:22:13.328 -> .......... .......... .......... .......... .......... .......... .......... ..........
+14:35:53.414 -> .......... .......... .......... .......... ...
+```
+
+You can see the `favicon.ico` at the upper left corner
+
+##### On Chrome
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_favicon.png">
+</p>
+
+##### On Firefox
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Firefox_favicon.png">
+</p>
 
 ---
 ---
@@ -1693,7 +1728,9 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
  3. Modify examples to display `country-code`
  4. Add tempo method to modify `arduino-pico` core to change `country-code`
  5. Fix issue with slow browsers or network. Check [Target stops responding after variable time when using Firefox on Windows 10 #3](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/3)
-
+ 6. Add functions and example `Async_AdvancedWebServer_favicon` to support `favicon.ico`
+ 
+ 
 ---
 ---
 

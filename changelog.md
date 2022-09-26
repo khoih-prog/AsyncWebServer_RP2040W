@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.1.2](#Release-v112)
   * [Release v1.1.1](#Release-v111)
   * [Release v1.1.0](#Release-v110)
   * [Release v1.0.3](#Release-v103)
@@ -22,6 +23,10 @@
 ---
 
 ## Changelog
+
+### Release v1.1.2
+
+1. Add functions and example `Async_AdvancedWebServer_favicon` to support `favicon.ico`
 
 ### Release v1.1.1
 

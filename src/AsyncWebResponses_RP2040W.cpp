@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.1.0
+  Version: 1.1.2
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -18,6 +18,7 @@
   1.0.2   K Hoang      15/08/2022 Fix LED bug in examples
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
   1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
+  1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -216,6 +217,43 @@ size_t AsyncWebServerResponse::_ack(AsyncWebServerRequest *request, size_t len, 
   return 0;
 }
 
+/////////////////////////////////////////////////
+
+/*
+   Fake Progmem Response
+ * */
+
+AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, const uint8_t * content, size_t len, AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
+{
+  _code          = code;
+  _content       = content;
+  _contentType   = contentType;
+  _contentLength = len;
+  _readLength    = 0;
+}
+
+////////////////////////////////////////////////
+
+size_t AsyncProgmemResponse::_fillBuffer(uint8_t *data, size_t len) 
+{
+  size_t left = _contentLength - _readLength;
+  
+  if (left > len) 
+  {
+    memcpy(data, _content + _readLength, len);
+    _readLength += len;
+    return len;
+  }
+  
+  memcpy(data, _content + _readLength, left);
+  _readLength += left;
+  
+  return left;
+}
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
 /*
    String/Code Response
  * */
@@ -235,6 +273,24 @@ AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, cons
 
   addHeader("Connection", "close");
 }
+
+/////////////////////////////////////////////////
+
+// KH add for favicon
+#if 0
+AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, const uint8_t * content, size_t len)
+{
+  _code = code;
+  _content = content;
+  _contentType = contentType;
+
+  _contentLength = len;
+
+  addHeader("Connection", "close");
+}
+#endif
+
+/////////////////////////////////////////////////
 
 void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
 {
