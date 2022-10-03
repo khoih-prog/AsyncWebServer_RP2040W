@@ -14,6 +14,7 @@
 ## Table of contents
 
 * [Table of contents](#table-of-contents)
+* [Important Note from v1.2.0](#Important-Note-from-v120)
 * [Why do we need this AsyncWebServer_RP2040W library](#why-do-we-need-this-AsyncWebServer_RP2040W-library)
   * [Features](#features)
   * [Why Async is better](#why-async-is-better)
@@ -87,6 +88,8 @@
   * [10. WebClientRepeating](examples/WebClientRepeating)
   * [11. Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
   * [12. Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
+  * [13. Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
+  * [14. Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
 * [Example Async_AdvancedWebServer](#Example-Async_AdvancedWebServer)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. Async_AdvancedWebServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#1-Async_AdvancedWebServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
@@ -96,6 +99,7 @@
   * [5. MQTT_ThingStream on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#5-MQTT_ThingStream-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [6. Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#6-Async_AdvancedWebServer_Country-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [7. Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#7-Async_AdvancedWebServer_favicon-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
+  * [8. Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W](#8-Async_AdvancedWebServer_MemoryIssues_Send_CString-on-RASPBERRY_PI_PICO_W)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
@@ -105,6 +109,63 @@
 * [Contributing](#contributing)
 * [License](#license)
 * [Copyright](#copyright)
+
+---
+---
+
+### Important Note from v1.2.0
+
+The new `v1.2.0` has added a new and powerful feature to permit using `CString` to save heap to send `very large data`.
+
+Check the `marvelleous` PR of **@salasidis** [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8) and these new examples
+
+1. [Async_AdvancedWebServer_MemoryIssues_Send_CString](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_MemoryIssues_Send_CString)
+2. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString)
+
+If using Arduino `String`, to send a buffer around 40 KBytes, the used `Max Heap` is around **75,240 bytes (~2 times)**
+
+If using CString, with the same 40 KByte, the used `Max Heap` is around **43,976 bytes (~1 times)**
+
+This is very critical in use-cases where sending `very large data` is necessary, without `heap-allocation-error`.
+
+
+1. The traditional function used to send `Arduino String` is
+
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/9075cb4cce8be687ae4a79d96afc1c46180b3304/src/AsyncWebServer_RP2040W.h#L413
+
+such as
+
+```cpp
+request->send(200, textPlainStr, ArduinoStr);
+```
+The required HEAP is about **2 times of the String size**
+
+2. To use `CString` but don't destroy it after sending. Use function
+
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/9075cb4cce8be687ae4a79d96afc1c46180b3304/src/AsyncWebServer_RP2040W.h#L414
+
+such as 
+
+```cpp
+request->send(200, textPlainStr, cStr);
+```
+
+The required HEAP is also about **2 times of the CString size**
+
+
+3. To use `CString` but destroy it after sending. Use function
+
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/9075cb4cce8be687ae4a79d96afc1c46180b3304/src/AsyncWebServer_RP2040W.h#L414
+
+such as 
+
+```cpp
+request->send(200, textPlainStr, cStr, false);
+```
+
+The required HEAP is also about **1 times of the CString size**.
+
+
 
 ---
 ---
@@ -1426,7 +1487,8 @@ build_flags =
 10. [WebClientRepeating](examples/WebClientRepeating)
 11. [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
 12. [Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
-
+13. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
+14. [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
 
 ---
 ---
@@ -1454,7 +1516,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer](e
 ```
 Start Async_AdvancedWebServer on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.2
+AsyncWebServer_RP2040W v1.2.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1478,7 +1540,7 @@ Following is debug terminal output when running example [WebClient](examples/Web
 ```
 Start WebClient on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.2
+AsyncWebServer_RP2040W v1.2.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1556,7 +1618,7 @@ Following is debug terminal output when running example [MQTTClient_Auth](exampl
 ```
 Start MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.2
+AsyncWebServer_RP2040W v1.2.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1578,7 +1640,7 @@ Following is debug terminal output when running example [MQTTClient_Basic](examp
 ```
 Start MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.2
+AsyncWebServer_RP2040W v1.2.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1600,7 +1662,7 @@ Following is debug terminal output when running example [MQTT_ThingStream](examp
 ```
 Start MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.2
+AsyncWebServer_RP2040W v1.2.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1628,7 +1690,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_Co
 ```
 Start Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.1.2
+AsyncWebServer_RP2040W v1.2.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1664,7 +1726,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_fa
 ```
 14:22:06.632 -> Start Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 14:22:06.632 -> AsyncTCP_RP2040W v1.1.0
-14:22:06.632 -> AsyncWebServer_RP2040W v1.1.2
+14:22:06.632 -> AsyncWebServer_RP2040W v1.2.0
 14:22:06.632 -> Connecting to SSID: HueNet1
 14:22:13.328 -> SSID: HueNet1
 14:22:13.328 -> Local IP Address: 192.168.2.180
@@ -1686,6 +1748,77 @@ You can see the `favicon.ico` at the upper left corner
 
 <p align="center">
     <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Firefox_favicon.png">
+</p>
+
+---
+
+
+#### 8. Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W
+
+Following is the debug terminal and screen shot when running example [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) on RASPBERRY_PI_PICO_W to demonstrate the new and powerful `HEAP-saving` feature
+
+
+##### Using CString  ===> small heap (43,976 bytes)
+
+```
+Start Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.2.0
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.74
+Country code: XX
+HTTP EthernetWebServer is @ IP : 192.168.2.74
+
+HEAP DATA - Pre Create Arduino String  Cur heap: 193000  Free heap: 150928  Max heap: 42072
+..
+HEAP DATA - Pre Send  Cur heap: 193000  Free heap: 149176  Max heap: 43824
+
+HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149048  Max heap: 43952
+
+HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149032  Max heap: 43968
+........ .
+HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149024  Max heap: 43976
+.......... .......... .......... ........
+Out String Length=31247
+.. .......... .......... .......... ..........
+```
+
+While using Arduino String, the HEAP usage is very large
+
+
+#### Async_AdvancedWebServer_MemoryIssues_SendArduinoString  ===> very large heap (75,240 bytes)
+
+```
+Start Async_AdvancedWebServer_MemoryIssues_SendArduinoString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.2.0
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.74
+Country code: XX
+HTTP EthernetWebServer is @ IP : 192.168.2.74
+
+HEAP DATA - Pre Create Arduino String  Cur heap: 193256  Free heap: 191192  Max heap: 2064
+.
+HEAP DATA - Pre Send  Cur heap: 193256  Free heap: 149432  Max heap: 43824
+
+HEAP DATA - Post Send  Cur heap: 193256  Free heap: 118056  Max heap: 75200
+......
+HEAP DATA - Post Send  Cur heap: 193256  Free heap: 118024  Max heap: 75232
+... .......... .......... .......... ...
+HEAP DATA - Post Send  Cur heap: 193256  Free heap: 118016  Max heap: 75240
+....... .......... .......... ..........
+.......... .......... .......... ........
+Out String Length=31247
+.. .......... .
+```
+
+
+You can access the Async Advanced WebServers at the displayed server IP, e.g. `192.168.2.74`
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W v1.2.0/blob/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
 </p>
 
 ---
@@ -1730,7 +1863,7 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
  4. Add tempo method to modify `arduino-pico` core to change `country-code`
  5. Fix issue with slow browsers or network. Check [Target stops responding after variable time when using Firefox on Windows 10 #3](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/3)
  6. Add functions and example `Async_AdvancedWebServer_favicon` to support `favicon.ico`
- 
+ 7. Support using `CString` to save heap to send `very large data`. Check [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
  
 ---
 ---
@@ -1741,11 +1874,13 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
 2. Thanks to [revell1](https://github.com/revell1) to 
 - report the bug in [LED state appears to be reversed. #2](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/2), leading to v1.0.2
 - request enhancement in [Target stops responding after variable time when using Firefox on Windows 10 #3](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/3), leading to v1.1.0
+3. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the mavellous PR [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.2.0` to support using `CString` to save heap to send `very large data`
 
 <table>
   <tr>
     <td align="center"><a href="https://github.com/me-no-dev"><img src="https://github.com/me-no-dev.png" width="100px;" alt="me-no-dev"/><br /><sub><b>⭐️⭐️ Hristo Gochkov</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/revell1"><img src="https://github.com/revell1.png" width="100px;" alt="revell1"/><br /><sub><b>revell1</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/salasidis"><img src="https://github.com/salasidis.png" width="100px;" alt="salasidis"/><br /><sub><b>⭐️ salasidis</b></sub></a><br /></td>
   </tr> 
 </table>
 
