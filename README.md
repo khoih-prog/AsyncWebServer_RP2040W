@@ -1,5 +1,6 @@
 # AsyncWebServer_RP2040W
 
+[![arduino-library-badge](https://www.ardu-badge.com/badge/AsyncWebServer_RP2040W.svg?)](https://www.ardu-badge.com/AsyncWebServer_RP2040W)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/AsyncWebServer_RP2040W.svg)](https://github.com/khoih-prog/AsyncWebServer_RP2040W/releases)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/AsyncWebServer_RP2040W.svg)](http://github.com/khoih-prog/AsyncWebServer_RP2040W/issues)
@@ -1818,7 +1819,7 @@ Out String Length=31247
 You can access the Async Advanced WebServers at the displayed server IP, e.g. `192.168.2.74`
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W v1.2.0/blob/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
 </p>
 
 ---
