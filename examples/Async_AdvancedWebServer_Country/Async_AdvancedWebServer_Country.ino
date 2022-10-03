@@ -87,7 +87,7 @@ void handleRoot(AsyncWebServerRequest *request)
   snprintf(temp, BUFFER_SIZE - 1,
            "<html>\
 <head>\
-<meta http-equiv='refresh' content='5'/>\
+<meta http-equiv='refresh' content='60'/>\
 <title>AsyncWebServer-%s</title>\
 <style>\
 body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
@@ -183,7 +183,7 @@ void setup()
   digitalWrite(LED_BUILTIN, LED_OFF);
 
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   delay(200);
 

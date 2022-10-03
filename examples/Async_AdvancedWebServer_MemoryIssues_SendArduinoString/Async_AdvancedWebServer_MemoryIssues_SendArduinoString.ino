@@ -1,6 +1,6 @@
 /****************************************************************************************************************************
-  Async_HelloServer.h
-  
+  Async_AdvancedWebServer_MemoryIssues_SendArduinoString.ino - - Dead simple AsyncWebServer for Portenta_H7
+
   For RP2040W with CYW43439 WiFi
   
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
@@ -8,6 +8,34 @@
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
+
+  Copyright (c) 2015, Majenko Technologies
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+
+  Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+  Redistributions in binary form must reproduce the above copyright notice, this
+  list of conditions and the following disclaimer in the documentation and/or
+  other materials provided with the distribution.
+
+  Neither the name of Majenko Technologies nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************************************************************/
 
 // See the list of country codes in
@@ -34,33 +62,57 @@ char pass[] = "12345678";         // your network password (use for WPA, or use 
 
 int status = WL_IDLE_STATUS;
 
+// In bytes
+#define STRING_SIZE                    40000
+
 AsyncWebServer    server(80);
 
-#define LED_OFF             LOW
-#define LED_ON              HIGH
+int reqCount = 0;                // number of requests received
 
-#define BUFFER_SIZE         64
+#define LED_OFF             HIGH
+#define LED_ON              LOW
+
+
+#define BUFFER_SIZE         512
 char temp[BUFFER_SIZE];
 
 void handleRoot(AsyncWebServerRequest *request)
 {
   digitalWrite(LED_BUILTIN, LED_ON);
 
-  snprintf(temp, BUFFER_SIZE - 1, "Hello from Async_HelloServer on %s\n", BOARD_NAME);
+  int sec = millis() / 1000;
+  int min = sec / 60;
+  int hr = min / 60;
+  int day = hr / 24;
 
-  request->send(200, "text/plain", temp);
-  
+  snprintf(temp, BUFFER_SIZE - 1,
+           "<html>\
+<head>\
+<meta http-equiv='refresh' content='60'/>\
+<title>AsyncWebServer-%s</title>\
+<style>\
+body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
+</style>\
+</head>\
+<body>\
+<h2>AsyncWebServer_RP2040W!</h2>\
+<h3>running WiFi on %s</h3>\
+<p>Uptime: %d d %02d:%02d:%02d</p>\
+<img src=\"/test.svg\" />\
+</body>\
+</html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
+
+  request->send(200, "text/html", temp);
+
   digitalWrite(LED_BUILTIN, LED_OFF);
 }
 
 void handleNotFound(AsyncWebServerRequest *request)
 {
   digitalWrite(LED_BUILTIN, LED_ON);
-  
   String message = "File Not Found\n\n";
 
   message += "URI: ";
-  //message += server.uri();
   message += request->url();
   message += "\nMethod: ";
   message += (request->method() == HTTP_GET) ? "GET" : "POST";
@@ -72,9 +124,80 @@ void handleNotFound(AsyncWebServerRequest *request)
   {
     message += " " + request->argName(i) + ": " + request->arg(i) + "\n";
   }
- 
+
   request->send(404, "text/plain", message);
   digitalWrite(LED_BUILTIN, LED_OFF);
+}
+
+void PrintHeapData(String hIn)
+{
+  // Check https://arduino-pico.readthedocs.io/en/latest/rp2040.html
+  
+  static uint32_t maxHeapSize = 0;
+
+  uint32_t usedHeap  = rp2040.getUsedHeap();
+  uint32_t totalHeap = rp2040.getTotalHeap();
+  
+  // Print and update only when larger heap
+  if (maxHeapSize < usedHeap)
+  {
+    maxHeapSize = usedHeap;
+  
+    Serial.print("\nHEAP DATA - ");
+    Serial.print(hIn);
+    
+    Serial.print("  Cur heap: ");
+    Serial.print(totalHeap);
+    Serial.print("  Free heap: ");
+    Serial.print(totalHeap - usedHeap);
+    Serial.print("  Max heap: ");
+    Serial.println(usedHeap);
+  }
+}
+
+void PrintStringSize(String & out)
+{ 
+  static uint32_t count = 0;
+
+  // Print only when cStr length too large and corrupting memory or every (20 * 5) s
+  if ( (out.length() >= STRING_SIZE) || (++count > 20) )
+  {
+    Serial.print("\nOut String Length=");
+    Serial.println(out.length());
+
+    count = 0;
+  }
+}
+
+void drawGraph(AsyncWebServerRequest *request)
+{
+  String out;
+
+  out.reserve(STRING_SIZE);
+  char temp[70];
+
+  out += "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"1810\" height=\"150\">\n";
+  out += "<rect width=\"1810\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"2\" stroke=\"rgb(0, 0, 0)\" />\n";
+  out += "<g stroke=\"blue\">\n";
+  int y = rand() % 130;
+
+  for (int x = 10; x < 5000; x += 10)
+  {
+    int y2 = rand() % 130;
+    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"2\" />\n", x, 140 - y, x + 10, 140 - y2);
+    out += temp;
+    y = y2;
+  }
+  
+  out += "</g>\n</svg>\n";
+
+  PrintHeapData("Pre Send");
+
+  PrintStringSize(out);
+
+  request->send(200, "image/svg+xml", out);
+
+  PrintHeapData("Post Send");
 }
 
 void printWifiStatus()
@@ -109,13 +232,13 @@ void setup()
 
   delay(200);
 
-  Serial.print("\nStart Async_HelloServer on "); Serial.print(BOARD_NAME);
+  Serial.print("\nStart Async_AdvancedWebServer_MemoryIssues_SendArduinoString on "); Serial.print(BOARD_NAME);
   Serial.print(" with "); Serial.println(SHIELD_TYPE);
   Serial.println(ASYNCTCP_RP2040W_VERSION);
   Serial.println(ASYNC_WEBSERVER_RP2040W_VERSION);
 
   ///////////////////////////////////
-  
+
   // check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE)
   {
@@ -126,7 +249,7 @@ void setup()
 
   Serial.print(F("Connecting to SSID: "));
   Serial.println(ssid);
-
+ 
   status = WiFi.begin(ssid, pass);
 
   delay(1000);
@@ -141,12 +264,17 @@ void setup()
   }
 
   printWifiStatus();
-  
-  ///////////////////////////////////
 
+  ///////////////////////////////////
+ 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
   {
     handleRoot(request);
+  });
+
+  server.on("/test.svg", HTTP_GET, [](AsyncWebServerRequest * request)
+  {
+    drawGraph(request);
   });
 
   server.on("/inline", [](AsyncWebServerRequest * request)
@@ -160,6 +288,9 @@ void setup()
 
   Serial.print(F("HTTP EthernetWebServer is @ IP : "));
   Serial.println(WiFi.localIP());
+
+  PrintHeapData("Pre Create Arduino String");
+
 }
 
 void heartBeatPrint()

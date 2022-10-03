@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.2.0](#Release-v120)
   * [Release v1.1.2](#Release-v112)
   * [Release v1.1.1](#Release-v111)
   * [Release v1.1.0](#Release-v110)
@@ -23,6 +24,11 @@
 ---
 
 ## Changelog
+
+### Release v1.2.0
+
+1. Support using `CString` to save heap to send `very large data`. Check [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
+2. Add multiple examples to demo the new feature
 
 ### Release v1.1.2
 

@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.1.2
+  Version: 1.2.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -19,6 +19,7 @@
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
   1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
+  1.2.0   K Hoang      03/10/2022 Option to use cString instead og String to save Heap
  *****************************************************************************************************************************/
 
 #pragma once
@@ -34,6 +35,8 @@
 
 #include "stddef.h"
 #include <time.h>
+
+/////////////////////////////////////////////////
 
 class AsyncStaticWebHandler: public AsyncWebHandler
 {
@@ -62,12 +65,16 @@ class AsyncStaticWebHandler: public AsyncWebHandler
     AsyncStaticWebHandler& setLastModified(time_t last_modified);
     AsyncStaticWebHandler& setLastModified(); //sets to current time. Make sure sntp is runing and time is updated
 
+    /////////////////////////////////////////////////
+
     AsyncStaticWebHandler& setTemplateProcessor(AwsTemplateProcessor newCallback)
     {
       _callback = newCallback;
       return *this;
     }
 };
+
+/////////////////////////////////////////////////
 
 class AsyncCallbackWebHandler: public AsyncWebHandler
 {
@@ -83,30 +90,43 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
   public:
     AsyncCallbackWebHandler() : _uri(), _method(HTTP_ANY), _onRequest(NULL), _onUpload(NULL), _onBody(NULL), _isRegex(false) {}
 
-    void setUri(const String& uri)
+    /////////////////////////////////////////////////
+
+    inline void setUri(const String& uri)
     {
       _uri = uri;
       _isRegex = uri.startsWith("^") && uri.endsWith("$");
     }
 
-    void setMethod(WebRequestMethodComposite method)
+    /////////////////////////////////////////////////
+
+    inline void setMethod(WebRequestMethodComposite method)
     {
       _method = method;
     }
-    void onRequest(ArRequestHandlerFunction fn)
+
+    /////////////////////////////////////////////////
+    
+    inline void onRequest(ArRequestHandlerFunction fn)
     {
       _onRequest = fn;
     }
 
-    void onUpload(ArUploadHandlerFunction fn)
+    /////////////////////////////////////////////////
+
+    inline void onUpload(ArUploadHandlerFunction fn)
     {
       _onUpload = fn;
     }
 
-    void onBody(ArBodyHandlerFunction fn)
+    /////////////////////////////////////////////////
+
+    inline void onBody(ArBodyHandlerFunction fn)
     {
       _onBody = fn;
     }
+
+    /////////////////////////////////////////////////
 
     virtual bool canHandle(AsyncWebServerRequest *request) override final
     {
@@ -154,6 +174,8 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
       return true;
     }
 
+    /////////////////////////////////////////////////
+
     virtual void handleRequest(AsyncWebServerRequest *request) override final
     {
       if (_onRequest)
@@ -162,11 +184,15 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
         request->send(500);
     }
 
+    /////////////////////////////////////////////////
+
     virtual void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) override final
     {
       if (_onBody)
         _onBody(request, data, len, index, total);
     }
+
+    /////////////////////////////////////////////////
 
     virtual bool isRequestHandlerTrivial() override final
     {

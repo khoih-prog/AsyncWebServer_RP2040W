@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.1.2
+  Version: 1.2.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -19,6 +19,7 @@
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
   1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
+  1.2.0   K Hoang      03/10/2022 Option to use cString instead og String to save Heap
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -1099,6 +1100,12 @@ void AsyncWebServerRequest::send(AsyncWebServerResponse *response)
   }  
 }
 
+//RSMOD///////////////////////////////////////////////
+
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(int code, const String& contentType, const char * content)
+{
+  return new AsyncBasicResponse(code, contentType, content);
+}
 /////////////////////////////////////////////////
 
 AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(int code, const String& contentType, const String& content)
@@ -1144,6 +1151,22 @@ AsyncResponseStream * AsyncWebServerRequest::beginResponseStream(const String& c
 {
   return new AsyncResponseStream(contentType, bufferSize);
 }
+
+//RSMOD///////////////////////////////////////////////
+
+void AsyncWebServerRequest::send(int code, const String& contentType, const char *content, bool nonDetructiveSend)
+{
+  if (nonDetructiveSend)
+  {
+    send(beginResponse(code, contentType, String(content)));  // for backwards compatibility
+  }
+  else
+  {
+    send(beginResponse(code, contentType, content));
+  }
+}
+
+/////////////////////////////////////////////////
 
 void AsyncWebServerRequest::send(int code, const String& contentType, const String& content)
 {

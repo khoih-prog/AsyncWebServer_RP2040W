@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.1.2
+  Version: 1.2.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -19,6 +19,7 @@
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
   1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
+  1.2.0   K Hoang      03/10/2022 Option to use cString instead og String to save Heap
  *****************************************************************************************************************************/
 
 #pragma once
@@ -41,16 +42,23 @@ class LinkedListNode
     LinkedListNode(const T val): _value(val), next(nullptr) {}
     ~LinkedListNode() {}
 
-    const T& value() const
+    /////////////////////////////////////////////////
+
+    inline const T& value() const
     {
       return _value;
     };
 
-    T& value()
+    /////////////////////////////////////////////////
+
+    inline T& value()
     {
       return _value;
     }
 };
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 template <typename T, template<typename> class Item = LinkedListNode>
 class LinkedList
@@ -72,23 +80,31 @@ class LinkedList
         Iterator(ItemType* current = nullptr) : _node(current) {}
         Iterator(const Iterator& i) : _node(i._node) {}
 
-        Iterator& operator ++()
+        /////////////////////////////////////////////////
+
+        inline Iterator& operator ++()
         {
           _node = _node->next;
           return *this;
         }
 
-        bool operator != (const Iterator& i) const
+        /////////////////////////////////////////////////
+
+        inline bool operator != (const Iterator& i) const
         {
           return _node != i._node;
         }
 
-        const T& operator * () const
+        /////////////////////////////////////////////////
+
+        inline const T& operator * () const
         {
           return _node->value();
         }
 
-        const T* operator -> () const
+        /////////////////////////////////////////////////
+
+        inline const T* operator -> () const
         {
           return &_node->value();
         }
@@ -97,18 +113,26 @@ class LinkedList
   public:
     typedef const Iterator ConstIterator;
 
-    ConstIterator begin() const
+    /////////////////////////////////////////////////
+
+    inline ConstIterator begin() const
     {
       return ConstIterator(_root);
     }
 
-    ConstIterator end() const
+    /////////////////////////////////////////////////
+
+    inline ConstIterator end() const
     {
       return ConstIterator(nullptr);
     }
 
+    /////////////////////////////////////////////////
+
     LinkedList(OnRemove onRemove) : _root(nullptr), _onRemove(onRemove) {}
     ~LinkedList() {}
+
+    /////////////////////////////////////////////////
 
     void add(const T& t)
     {
@@ -129,15 +153,21 @@ class LinkedList
       }
     }
 
-    T& front() const
+    /////////////////////////////////////////////////
+
+    inline T& front() const
     {
       return _root->value();
     }
 
-    bool isEmpty() const
+    /////////////////////////////////////////////////
+
+    inline bool isEmpty() const
     {
       return _root == nullptr;
     }
+
+    /////////////////////////////////////////////////
 
     size_t length() const
     {
@@ -152,6 +182,8 @@ class LinkedList
 
       return i;
     }
+
+    /////////////////////////////////////////////////
 
     size_t count_if(Predicate predicate) const
     {
@@ -175,6 +207,8 @@ class LinkedList
       return i;
     }
 
+    /////////////////////////////////////////////////
+
     const T* nth(size_t N) const
     {
       size_t i = 0;
@@ -190,6 +224,8 @@ class LinkedList
 
       return nullptr;
     }
+
+    /////////////////////////////////////////////////
 
     bool remove(const T& t)
     {
@@ -225,6 +261,8 @@ class LinkedList
       return false;
     }
 
+    /////////////////////////////////////////////////
+
     bool remove_first(Predicate predicate)
     {
       auto it = _root;
@@ -259,6 +297,8 @@ class LinkedList
       return false;
     }
 
+    /////////////////////////////////////////////////
+
     void free()
     {
       while (_root != nullptr)
@@ -278,12 +318,16 @@ class LinkedList
     }
 };
 
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
 
 class StringArray : public LinkedList<String>
 {
   public:
 
     StringArray() : LinkedList(nullptr) {}
+
+    /////////////////////////////////////////////////
 
     bool containsIgnoreCase(const String& str)
     {

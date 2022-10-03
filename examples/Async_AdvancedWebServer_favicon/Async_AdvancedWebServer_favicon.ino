@@ -85,7 +85,7 @@ void handleRoot(AsyncWebServerRequest *request)
   snprintf(temp, BUFFER_SIZE - 1,
            "<html>\
 <head>\
-<meta http-equiv='refresh' content='5'/>\
+<meta http-equiv='refresh' content='60'/>\
 <title>AsyncWebServer-%s</title>\
 <style>\
 body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
@@ -190,7 +190,7 @@ void setup()
   digitalWrite(LED_BUILTIN, LED_OFF);
 
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   delay(200);
 
@@ -279,7 +279,7 @@ void check_status()
 {
   static unsigned long checkstatus_timeout = 0;
 
-#define STATUS_CHECK_INTERVAL     10000L
+#define STATUS_CHECK_INTERVAL     60000L
 
   // Send status report every STATUS_REPORT_INTERVAL (60) seconds: we don't need to send updates frequently if there is no status change.
   if ((millis() > checkstatus_timeout) || (checkstatus_timeout == 0))

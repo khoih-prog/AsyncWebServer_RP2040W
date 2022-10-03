@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.1.2
+  Version: 1.2.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -19,6 +19,7 @@
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
   1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
+  1.2.0   K Hoang      03/10/2022 Option to use cString instead og String to save Heap
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -35,6 +36,8 @@
 #include "Crypto/bearssl_hash.h"
 #include "Crypto/Hash.h"
 
+/////////////////////////////////////////////////
+
 // Basic Auth hash = base64("username:password")
 
 bool checkBasicAuthentication(const char * hash, const char * username, const char * password) 
@@ -42,6 +45,7 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
   if (username == NULL || password == NULL || hash == NULL)
   {
     AWS_LOGDEBUG("checkBasicAuthentication: Fail: NULL username/password/hash");
+    
     return false;
   }
 
@@ -71,6 +75,7 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
     AWS_LOGDEBUG("checkBasicAuthentication: NULL encoded");
   
     delete[] toencode;
+    
     return false;
   }
   
@@ -82,6 +87,7 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
     
     delete[] toencode;
     delete[] encoded;
+    
     return true;
   }
   
@@ -89,8 +95,11 @@ bool checkBasicAuthentication(const char * hash, const char * username, const ch
   
   delete[] toencode;
   delete[] encoded;
+  
   return false;
 }
+
+/////////////////////////////////////////////////
 
 static bool getMD5(uint8_t * data, uint16_t len, char * output) 
 { 
@@ -128,6 +137,8 @@ static bool getMD5(uint8_t * data, uint16_t len, char * output)
   return true;
 }
 
+/////////////////////////////////////////////////
+
 static String genRandomMD5() 
 {
   // For RP2040W
@@ -146,6 +157,8 @@ static String genRandomMD5()
   return res;
 }
 
+/////////////////////////////////////////////////
+
 static String stringMD5(const String& in) 
 {
   char * out = (char*) malloc(33);
@@ -160,6 +173,8 @@ static String stringMD5(const String& in)
   
   return res;
 }
+
+/////////////////////////////////////////////////
 
 String generateDigestHash(const char * username, const char * password, const char * realm) 
 {
@@ -190,6 +205,8 @@ String generateDigestHash(const char * username, const char * password, const ch
   return res;
 }
 
+/////////////////////////////////////////////////
+
 String requestDigestAuthentication(const char * realm) 
 {
   String header = "realm=\"";
@@ -210,8 +227,10 @@ String requestDigestAuthentication(const char * realm)
   return header;
 }
 
+/////////////////////////////////////////////////
+
 bool checkDigestAuthentication(const char * header, const char * method, const char * username, const char * password, 
-                                const char * realm, bool passwordIsHash, const char * nonce, const char * opaque, const char * uri) 
+                               const char * realm, bool passwordIsHash, const char * nonce, const char * opaque, const char * uri) 
 {
   if (username == NULL || password == NULL || header == NULL || method == NULL) 
   {
