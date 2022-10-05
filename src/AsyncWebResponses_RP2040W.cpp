@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.2.0
+  Version: 1.2.1
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -19,7 +19,8 @@
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
   1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
-  1.2.0   K Hoang      03/10/2022 Option to use cString instead og String to save Heap
+  1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
+  1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -297,6 +298,7 @@ AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, cons
   _content = String("");
   _contentCstr = (char *)content;    // RSMOD
   _contentType = contentType;
+  _partialHeader = String();
 
   int iLen;
 
@@ -320,8 +322,11 @@ AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, cons
 {
   _code = code;
   _content = content;
+  
   _contentCstr = nullptr;        // RSMOD
+  
   _contentType = contentType;
+  _partialHeader = String();
 
   if (_content.length())
   {
@@ -375,20 +380,12 @@ void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
 
     if (_contentCstr)
     {
-      memmove(&_contentCstr[outLen], _contentCstr, _contentLength);
-      memcpy(_contentCstr, out.c_str(), outLen);
-      outLen += _contentLength;
-
-      AWS_LOGDEBUG1("_contentCstr =", _contentCstr);
-
-      _writtenLength += request->client()->write(_contentCstr, outLen);
+      _content = String(_contentCstr);    // short _contentCstr - so just send as Arduino String - not much of a penalty - fall into below
     }
-    else
-    {
-      out += _content;
-      outLen += _contentLength;
-      _writtenLength += request->client()->write(out.c_str(), outLen);
-    }
+
+    out += _content;
+    outLen += _contentLength;
+    _writtenLength += request->client()->write(out.c_str(), outLen);
 
     _state = RESPONSE_WAIT_ACK;
   }
@@ -400,21 +397,18 @@ void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
 
     if (_contentCstr)
     {
-      int deltaLen = out.length() - partial.length();
-
-      memmove(&_contentCstr[deltaLen], _contentCstr,  deltaLen);
-      memcpy(_contentCstr, out.substring(space).c_str(), deltaLen);
+      _partialHeader = out.substring(space);
     }
     else
     {
       _content = out.substring(space) + _content;
+      _contentLength += outLen - space;
     }
-
-    _contentLength += outLen - space;
 
     AWS_LOGDEBUG1("partial =", partial);
 
     _writtenLength += request->client()->write(partial.c_str(), partial.length());
+
     _state = RESPONSE_CONTENT;
   }
   else if (space > outLen && space < (outLen + _contentLength))
@@ -430,12 +424,21 @@ void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
     {
       char *s = (char *)malloc(shift + 1);
 
-      strncpy(s, _contentCstr, shift);
-      s[shift] = '\0';
-      out += String(s);
-      _contentCstr += shift;
+      if (s != nullptr)
+      {
+        strncpy(s, _contentCstr, shift);
+        s[shift] = '\0';
+        out += String(s);
+        _contentCstr += shift;
 
-      free(s);
+        free(s);
+      }
+      else
+      {
+        AWS_LOGERROR("AsyncBasicResponse::_respond: Out of heap");
+
+        return;
+      }
     }
     else
     {
@@ -454,15 +457,14 @@ void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
 
     if (_contentCstr)
     {
-      memmove(&_contentCstr[outLen], _contentCstr, _contentLength);
-      memcpy(_contentCstr, out.c_str(), outLen);
+      _partialHeader = out;
     }
     else
     {
       _content = out + _content;
+      _contentLength += outLen;
     }
-
-    _contentLength += outLen;
+    
     _state = RESPONSE_CONTENT;
   }
 
@@ -486,12 +488,40 @@ size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint
     size_t available = _contentLength - _sentLength;
     size_t space = request->client()->space();
 
+    if (_partialHeader.length() > 0)
+    {
+      if (_partialHeader.length() > space)
+      {
+        // Header longer than space - send a piece of it, and make the _partialHeader = to what remains
+        String _subHeader;
+        String tmpString;
+
+        _subHeader = _partialHeader.substring(0, space);
+        tmpString = _partialHeader.substring(space);
+        _partialHeader = tmpString;
+
+        _writtenLength += request->client()->write(_subHeader.c_str(), space);
+
+        return (_partialHeader.length());
+      }
+      else
+      {
+        // _partialHeader is <= space length - therefore send the whole thing, and make the remaining length = to the _contrentLength
+        _writtenLength += request->client()->write(_partialHeader.c_str(), _partialHeader.length());
+
+        _partialHeader = String();
+
+        return (_contentLength);
+      }
+    }
+
+    // if we are here - there is no _partialHJeader to send
+
     AWS_LOGDEBUG3("AsyncBasicResponse::_ack : available =", available, ", space =", space );
 
     //we can fit in this packet
     if (space > available)
     {
-      // Serial.println("In space>available");
       AWS_LOGDEBUG1("AsyncBasicResponse::_ack : Pre_ack, _contentLength =", _contentLength);
 
       if (_contentCstr)
@@ -506,7 +536,7 @@ size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint
         _writtenLength += request->client()->write(_content.c_str(), available);
         _content = String();
       }
-      
+
       _state = RESPONSE_WAIT_ACK;
 
       return available;
@@ -516,11 +546,22 @@ size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint
     if (_contentCstr)
     {
       char *s = (char *)malloc(space + 1);
-      strncpy(s, _contentCstr, space);
-      s[space] = '\0';
-      out = String(s);
-      _contentCstr += space;
-      free(s);
+
+      if (s != nullptr)
+      {
+        strncpy(s, _contentCstr, space);
+        s[space] = '\0';
+        out = String(s);
+        _contentCstr += space;
+        
+        free(s);
+      }
+      else
+      {
+        AWS_LOGERROR("AsyncBasicResponse::_ack: Out of heap");
+
+        return 0;
+      }
     }
     else
     {

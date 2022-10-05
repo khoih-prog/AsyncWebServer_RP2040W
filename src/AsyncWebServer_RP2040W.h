@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.2.0
+  Version: 1.2.1
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -19,7 +19,8 @@
   1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
   1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
-  1.2.0   K Hoang      03/10/2022 Option to use cString instead og String to save Heap
+  1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
+  1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
  *****************************************************************************************************************************/
  
 #ifndef _RP2040W_ASYNC_WEBSERVER_H_
@@ -35,13 +36,13 @@
 
 /////////////////////////////////////////////////
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.2.0"
+#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.2.1"
 
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MAJOR     1
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MINOR     2
-#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     0
+#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     1
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1002000
+#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1002001
 
 /////////////////////////////////////////////////
 
