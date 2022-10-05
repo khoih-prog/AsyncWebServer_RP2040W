@@ -116,34 +116,47 @@
 
 ### Important Note from v1.2.0
 
-The new `v1.2.0` has added a new and powerful feature to permit using `CString` to save heap to send `very large data`.
+The new `v1.2.0+` has added a new and powerful feature to permit using `CString` to save heap to send `very large data`.
 
-Check the `marvelleous` PR of **@salasidis** [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8) and these new examples
+Check the `marvelleous` PRs of **@salasidis** in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
+- [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
+- [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11)
+
+and these new examples
 
 1. [Async_AdvancedWebServer_MemoryIssues_Send_CString](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_MemoryIssues_Send_CString)
 2. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString)
 
-If using Arduino `String`, to send a buffer around 40 KBytes, the used `Max Heap` is around **75,240 bytes (~2 times)**
+If using Arduino String, to send a buffer around 30 KBytes, the used `Max Heap` is around **75,264 bytes**
 
-If using CString, with the same 40 KByte, the used `Max Heap` is around **43,976 bytes (~1 times)**
+If using CString in regular memory, with the same 30 KBytes, the used `Max Heap` is around **44,000 bytes, saving around a buffer size (30 KBytes)**
 
 This is very critical in use-cases where sending `very large data` is necessary, without `heap-allocation-error`.
 
 
 1. The traditional function used to send `Arduino String` is
 
-https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/9075cb4cce8be687ae4a79d96afc1c46180b3304/src/AsyncWebServer_RP2040W.h#L413
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/e98fdf0f1aa79f17071822522cb1a50ce4fdf6f4/src/AsyncWebServer_RP2040W.h#L414
+
+```cpp
+void send(int code, const String& contentType = String(), const String& content = String());
+```
 
 such as
 
 ```cpp
 request->send(200, textPlainStr, ArduinoStr);
 ```
-The required HEAP is about **2 times of the String size**
+The required additional HEAP is about **3 times of the String size**
 
-2. To use `CString` but don't destroy it after sending. Use function
 
-https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/9075cb4cce8be687ae4a79d96afc1c46180b3304/src/AsyncWebServer_RP2040W.h#L414
+2. To use `CString` with copying while sending. Use function
+
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/e98fdf0f1aa79f17071822522cb1a50ce4fdf6f4/src/AsyncWebServer_RP2040W.h#L415
+
+```cpp
+void send(int code, const String& contentType, const char *content, bool nonDetructiveSend = true);    // RSMOD
+```
 
 such as 
 
@@ -151,12 +164,16 @@ such as
 request->send(200, textPlainStr, cStr);
 ```
 
-The required HEAP is also about **2 times of the CString size**
+The required additional HEAP is also about **2 times of the CString size** because of `unnecessary copies` of the CString in HEAP. Avoid this `unefficient` way.
 
 
-3. To use `CString` but destroy it after sending. Use function
+3. To use `CString` without copying while sending. Use function
 
-https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/9075cb4cce8be687ae4a79d96afc1c46180b3304/src/AsyncWebServer_RP2040W.h#L414
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/e98fdf0f1aa79f17071822522cb1a50ce4fdf6f4/src/AsyncWebServer_RP2040W.h#L415
+
+```cpp
+void send(int code, const String& contentType, const char *content, bool nonDetructiveSend = true);    // RSMOD
+```
 
 such as 
 
@@ -164,7 +181,7 @@ such as
 request->send(200, textPlainStr, cStr, false);
 ```
 
-The required HEAP is also about **1 times of the CString size**.
+The required additional HEAP is about **1 times of the CString size**. This way is the best and **most efficient way** to use by avoiding of `unnecessary copies` of the CString in HEAP
 
 
 
@@ -214,7 +231,7 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 ## Prerequisites
 
  1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
- 2. [`Earle Philhower's arduino-pico core v2.5.4+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
+ 2. [`Earle Philhower's arduino-pico core v2.6.0+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
  3. [`AsyncTCP_RP2040W library v1.1.0+`](https://github.com/khoih-prog/AsyncTCP_RP2040W) for RASPBERRY_PI_PICO_W with CYW43439 WiFi. [![GitHub release](https://img.shields.io/github/release/khoih-prog/AsyncTCP_RP2040W.svg)](https://github.com/khoih-prog/AsyncTCP_RP2040W/releases/latest)
 
 ---
@@ -245,7 +262,7 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 ## Important things to remember
 
 - This is fully asynchronous server and as such does not run on the loop thread.
-- You can not use yield() or delay() or any function that uses them inside the callbacks
+- You can not use `yield()` or `delay()` or any function that uses them inside the callbacks
 - The server is smart enough to know when to close the connection and free resources
 - You can not send more than one response to a single request
 
@@ -1011,7 +1028,7 @@ client->binary((uint8_t*)binary, (size_t)len);
 
 ### Direct access to web socket message buffer
 
-When sending a web socket message using the above methods a buffer is created.  Under certain circumstances you might want to manipulate or populate this buffer directly from your application, for example to prevent unnecessary duplications of the data.  This example below shows how to create a buffer and print data to it from an ArduinoJson object then send it.
+When sending a `websocket` message using the above methods a buffer is created.  Under certain circumstances you might want to manipulate or populate this buffer directly from your application, for example to prevent unnecessary duplications of the data.  This example below shows how to create a buffer and print data to it from an `ArduinoJson` object then send it.
 
 ```cpp
 void sendDataWs(AsyncWebSocketClient * client)
@@ -1044,7 +1061,7 @@ void sendDataWs(AsyncWebSocketClient * client)
 
 ### Limiting the number of web socket clients
 
-Browsers sometimes do not correctly close the websocket connection, even when the close() function is called in javascript.  This will eventually exhaust the web server's resources and will cause the server to crash.  Periodically calling the cleanClients() function from the main loop() function limits the number of clients by closing the oldest client when the maximum number of clients has been exceeded.  This can called be every cycle, however, if you wish to use less power, then calling as infrequently as once per second is sufficient.
+Browsers sometimes do not correctly close the websocket connection, even when the `close()` function is called in javascript.  This will eventually exhaust the web server's resources and will cause the server to crash.  Periodically calling the `cleanClients()` function from the main `loop()` function limits the number of clients by closing the oldest client when the maximum number of clients has been exceeded.  This can called be every cycle, however, if you wish to use less power, then calling as infrequently as once per second is sufficient.
 
 ```cpp
 void loop(){
@@ -1056,8 +1073,8 @@ void loop(){
 
 ## Async Event Source Plugin
 
-The server includes EventSource (Server-Sent Events) plugin which can be used to send short text events to the browser.
-Difference between EventSource and WebSockets is that EventSource is single direction, text-only protocol.
+The server includes `EventSource` (Server-Sent Events) plugin which can be used to send short text events to the browser.
+Difference between `EventSource` and `WebSockets` is that `EventSource` is single direction, text-only protocol.
 
 ### Setup Event Source on the server
 
@@ -1408,9 +1425,9 @@ void loop()
 
 ### Adding Default Headers
 
-In some cases, such as when working with CORS, or with some sort of custom authentication system, 
+In some cases, such as when working with `CORS`, or with some sort of custom authentication system, 
 you might need to define a header that should get added to all responses (including static, websocket and EventSource).
-The DefaultHeaders singleton allows you to do this.
+The `DefaultHeaders` singleton allows you to do this.
 
 Example:
 
@@ -1517,7 +1534,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer](e
 ```
 Start Async_AdvancedWebServer on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1541,7 +1558,7 @@ Following is debug terminal output when running example [WebClient](examples/Web
 ```
 Start WebClient on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1619,7 +1636,7 @@ Following is debug terminal output when running example [MQTTClient_Auth](exampl
 ```
 Start MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1641,7 +1658,7 @@ Following is debug terminal output when running example [MQTTClient_Basic](examp
 ```
 Start MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1663,7 +1680,7 @@ Following is debug terminal output when running example [MQTT_ThingStream](examp
 ```
 Start MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1691,7 +1708,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_Co
 ```
 Start Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1727,7 +1744,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_fa
 ```
 14:22:06.632 -> Start Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 14:22:06.632 -> AsyncTCP_RP2040W v1.1.0
-14:22:06.632 -> AsyncWebServer_RP2040W v1.2.0
+14:22:06.632 -> AsyncWebServer_RP2040W v1.2.1
 14:22:06.632 -> Connecting to SSID: HueNet1
 14:22:13.328 -> SSID: HueNet1
 14:22:13.328 -> Local IP Address: 192.168.2.180
@@ -1759,12 +1776,12 @@ You can see the `favicon.ico` at the upper left corner
 Following is the debug terminal and screen shot when running example [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) on RASPBERRY_PI_PICO_W to demonstrate the new and powerful `HEAP-saving` feature
 
 
-##### Using CString  ===> small heap (43,976 bytes)
+##### Using CString  ===> small heap (44,000 bytes)
 
 ```
 Start Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.74
@@ -1772,14 +1789,12 @@ Country code: XX
 HTTP EthernetWebServer is @ IP : 192.168.2.74
 
 HEAP DATA - Pre Create Arduino String  Cur heap: 193000  Free heap: 150928  Max heap: 42072
-..
+.75264
 HEAP DATA - Pre Send  Cur heap: 193000  Free heap: 149176  Max heap: 43824
 
-HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149048  Max heap: 43952
-
-HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149032  Max heap: 43968
-........ .
-HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149024  Max heap: 43976
+HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149016  Max heap: 43984
+.
+HEAP DATA - Post Send  Cur heap: 193000  Free heap: 149000  Max heap: 44000
 .......... .......... .......... ........
 Out String Length=31247
 .. .......... .......... .......... ..........
@@ -1788,12 +1803,12 @@ Out String Length=31247
 While using Arduino String, the HEAP usage is very large
 
 
-#### Async_AdvancedWebServer_MemoryIssues_SendArduinoString  ===> very large heap (75,240 bytes)
+#### Async_AdvancedWebServer_MemoryIssues_SendArduinoString  ===> very large heap (75,264 bytes)
 
 ```
 Start Async_AdvancedWebServer_MemoryIssues_SendArduinoString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.0
+AsyncWebServer_RP2040W v1.2.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.74
@@ -1804,11 +1819,9 @@ HEAP DATA - Pre Create Arduino String  Cur heap: 193256  Free heap: 191192  Max 
 .
 HEAP DATA - Pre Send  Cur heap: 193256  Free heap: 149432  Max heap: 43824
 
-HEAP DATA - Post Send  Cur heap: 193256  Free heap: 118056  Max heap: 75200
-......
 HEAP DATA - Post Send  Cur heap: 193256  Free heap: 118024  Max heap: 75232
-... .......... .......... .......... ...
-HEAP DATA - Post Send  Cur heap: 193256  Free heap: 118016  Max heap: 75240
+
+HEAP DATA - Post Send  Cur heap: 193256  Free heap: 117992  Max heap: 75264
 ....... .......... .......... ..........
 .......... .......... .......... ........
 Out String Length=31247
@@ -1875,7 +1888,9 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
 2. Thanks to [revell1](https://github.com/revell1) to 
 - report the bug in [LED state appears to be reversed. #2](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/2), leading to v1.0.2
 - request enhancement in [Target stops responding after variable time when using Firefox on Windows 10 #3](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/3), leading to v1.1.0
-3. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the mavellous PR [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.2.0` to support using `CString` to save heap to send `very large data`
+3. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the following `marvellous` PRs in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
+- [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.2.0` to support using `CString` to save heap to send `very large data`
+- [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11), leading to `v1.2.1` to remove `memmove()` and not to destroy String anymore
 
 <table>
   <tr>
