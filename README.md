@@ -1945,7 +1945,7 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
 3. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the following `marvellous` PRs in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
 - [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.2.0` to support using `CString` to save heap to send `very large data`
 - [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11), leading to `v1.2.1` to remove `memmove()` and not to destroy String anymore
-4. Thanks to [drmue](https://github.com/drmue) to reportthe bug in [Can't connect to AsyncWebSocketServer_RP2040 via javascript #5](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/5), leading to `v1.3.0` to Fix crash when using AsyncWebSockets server
+4. Thanks to [drmue](https://github.com/drmue) to report the bug in [Can't connect to AsyncWebSocketServer_RP2040 via javascript #5](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/5), leading to `v1.3.0` to fix crash when using `AsyncWebSockets server`
 
 
 <table>
