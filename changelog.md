@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.3.0](#Release-v130)
   * [Release v1.2.1](#Release-v121)
   * [Release v1.2.0](#Release-v120)
   * [Release v1.1.2](#Release-v112)
@@ -25,6 +26,11 @@
 ---
 
 ## Changelog
+
+#### Releases v1.3.0
+
+1. Fix `crash` when using `AsyncWebSockets server`. Check [Can't connect to AsyncWebSocketServer_RP2040 via javascript #5](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/5)
+2. Add example [Async_WebSocketsServer](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer) to demo the AsyncWebSockets Server with a `Python` [WSClient.py](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer/WSClient_Python/WSClient.py)
 
 #### Releases v1.2.1
 

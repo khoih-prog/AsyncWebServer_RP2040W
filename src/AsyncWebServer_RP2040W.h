@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.2.1
+  Version: 1.3.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -21,6 +21,7 @@
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
   1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
  *****************************************************************************************************************************/
  
 #ifndef _RP2040W_ASYNC_WEBSERVER_H_
@@ -36,13 +37,13 @@
 
 /////////////////////////////////////////////////
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.2.1"
+#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.3.0"
 
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MAJOR     1
-#define ASYNC_WEBSERVER_RP2040W_VERSION_MINOR     2
-#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     1
+#define ASYNC_WEBSERVER_RP2040W_VERSION_MINOR     3
+#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     0
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1002001
+#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1003000
 
 /////////////////////////////////////////////////
 
@@ -587,6 +588,7 @@ class AsyncWebHandler
     {
       _username = String(username);
       _password = String(password);
+      
       return *this;
     };
 
@@ -776,6 +778,7 @@ class DefaultHeaders
     static DefaultHeaders &Instance() 
     {
       static DefaultHeaders instance;
+      
       return instance;
     }
 };

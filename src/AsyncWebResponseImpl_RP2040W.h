@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.2.1
+  Version: 1.3.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -21,6 +21,7 @@
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
   1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
  *****************************************************************************************************************************/
 
 #pragma once
@@ -28,13 +29,19 @@
 #ifndef RP2040W_ASYNCWEBSERVERRESPONSEIMPL_H_
 #define RP2040W_ASYNCWEBSERVERRESPONSEIMPL_H_
 
+/////////////////////////////////////////////////
+
 #ifdef Arduino_h
   // arduino is not compatible with std::vector
   #undef min
   #undef max
 #endif
 
+/////////////////////////////////////////////////
+
 #include <vector>
+
+/////////////////////////////////////////////////
 
 // It is possible to restore these defines, but one can use _min and _max instead. Or std::min, std::max.
 
@@ -69,6 +76,8 @@ class AsyncBasicResponse: public AsyncWebServerResponse
     /////////////////////////////////////////////////
     
 };
+
+/////////////////////////////////////////////////
 
 class AsyncAbstractResponse: public AsyncWebServerResponse 
 {
@@ -142,6 +151,8 @@ class AsyncProgmemResponse: public AsyncAbstractResponse
 
 #define TEMPLATE_PARAM_NAME_LENGTH 32
 
+/////////////////////////////////////////////////
+
 class AsyncStreamResponse: public AsyncAbstractResponse 
 {
   private:
@@ -161,6 +172,8 @@ class AsyncStreamResponse: public AsyncAbstractResponse
     
     virtual size_t _fillBuffer(uint8_t *buf, size_t maxLen) override;
 };
+
+/////////////////////////////////////////////////
 
 class AsyncCallbackResponse: public AsyncAbstractResponse 
 {
@@ -183,6 +196,8 @@ class AsyncCallbackResponse: public AsyncAbstractResponse
     virtual size_t _fillBuffer(uint8_t *buf, size_t maxLen) override;
 };
 
+/////////////////////////////////////////////////
+
 class AsyncChunkedResponse: public AsyncAbstractResponse 
 {
   private:
@@ -204,7 +219,11 @@ class AsyncChunkedResponse: public AsyncAbstractResponse
     virtual size_t _fillBuffer(uint8_t *buf, size_t maxLen) override;
 };
 
+/////////////////////////////////////////////////
+
 class cbuf;
+
+/////////////////////////////////////////////////
 
 class AsyncResponseStream: public AsyncAbstractResponse, public Print 
 {
@@ -229,5 +248,7 @@ class AsyncResponseStream: public AsyncAbstractResponse, public Print
     size_t write(uint8_t data);
     using Print::write;
 };
+
+/////////////////////////////////////////////////
 
 #endif /* RP2040W_ASYNCWEBSERVERRESPONSEIMPL_H_ */

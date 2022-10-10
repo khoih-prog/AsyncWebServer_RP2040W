@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.2.1
+  Version: 1.3.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -21,6 +21,7 @@
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
   1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -196,7 +197,7 @@ void AsyncWebServer::_attachHandler(AsyncWebServerRequest *request)
 /////////////////////////////////////////////////
 
 AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest,
-    ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody)
+                                            ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
 
@@ -212,7 +213,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
 
 /////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, ArUploadHandlerFunction onUpload)
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, 
+                                            ArUploadHandlerFunction onUpload)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
   handler->setUri(uri);

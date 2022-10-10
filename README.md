@@ -91,6 +91,7 @@
   * [12. Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
   * [13. Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
   * [14. Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
+  * [15. Async_WebSocketsServer](examples/Async_WebSocketsServer) **New**
 * [Example Async_AdvancedWebServer](#Example-Async_AdvancedWebServer)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. Async_AdvancedWebServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#1-Async_AdvancedWebServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
@@ -101,6 +102,7 @@
   * [6. Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#6-Async_AdvancedWebServer_Country-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [7. Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#7-Async_AdvancedWebServer_favicon-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [8. Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W](#8-Async_AdvancedWebServer_MemoryIssues_Send_CString-on-RASPBERRY_PI_PICO_W)
+  * [9. Async_WebSocketsServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#9-Async_WebSocketsServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
@@ -261,7 +263,7 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 
 ## Important things to remember
 
-- This is fully asynchronous server and as such does not run on the loop thread.
+- This is fully asynchronous server and as such does not run on the `loop()` thread.
 - You can not use `yield()` or `delay()` or any function that uses them inside the callbacks
 - The server is smart enough to know when to close the connection and free resources
 - You can not send more than one response to a single request
@@ -329,7 +331,7 @@ The best and easiest way is to use `Arduino Library Manager`. Search for `AsyncW
 
 ### Template processing
 
-- AsyncWebServer_RP2040W contains simple template processing engine.
+- `AsyncWebServer_RP2040W` contains simple template processing engine.
 - Template processing can be added to most response types.
 - Currently it supports only replacing template placeholders with actual values. No conditional processing, cycles, etc.
 - Placeholders are delimited with `%` symbols. Like this: `%TEMPLATE_PLACEHOLDER%`.
@@ -1353,7 +1355,6 @@ void loop()
 ### Setup global and class functions as request handlers
 
 ```cpp
-
 #if !( defined(ARDUINO_RASPBERRY_PI_PICO_W) )
   #error For RASPBERRY_PI_PICO_W only
 #endif
@@ -1406,7 +1407,6 @@ void setup()
 
 void loop() 
 {
-
 }
 ```
 
@@ -1479,6 +1479,7 @@ Add/Update the following line:
 ```
 
 For platformio modify `platformio.ini`:
+
 ```ini
 [env:myboard]
 build_flags = 
@@ -1507,6 +1508,7 @@ build_flags =
 12. [Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
 13. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
 14. [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
+15. [Async_WebSocketsServer](examples/Async_WebSocketsServer) **New**
 
 ---
 ---
@@ -1534,7 +1536,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer](e
 ```
 Start Async_AdvancedWebServer on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1558,7 +1560,7 @@ Following is debug terminal output when running example [WebClient](examples/Web
 ```
 Start WebClient on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1636,7 +1638,7 @@ Following is debug terminal output when running example [MQTTClient_Auth](exampl
 ```
 Start MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1658,7 +1660,7 @@ Following is debug terminal output when running example [MQTTClient_Basic](examp
 ```
 Start MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1680,7 +1682,7 @@ Following is debug terminal output when running example [MQTT_ThingStream](examp
 ```
 Start MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1708,7 +1710,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_Co
 ```
 Start Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1744,7 +1746,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_fa
 ```
 14:22:06.632 -> Start Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 14:22:06.632 -> AsyncTCP_RP2040W v1.1.0
-14:22:06.632 -> AsyncWebServer_RP2040W v1.2.1
+14:22:06.632 -> AsyncWebServer_RP2040W v1.3.0
 14:22:06.632 -> Connecting to SSID: HueNet1
 14:22:13.328 -> SSID: HueNet1
 14:22:13.328 -> Local IP Address: 192.168.2.180
@@ -1781,7 +1783,7 @@ Following is the debug terminal and screen shot when running example [Async_Adva
 ```
 Start Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.74
@@ -1808,7 +1810,7 @@ While using Arduino String, the HEAP usage is very large
 ```
 Start Async_AdvancedWebServer_MemoryIssues_SendArduinoString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.2.1
+AsyncWebServer_RP2040W v1.3.0
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.74
@@ -1834,6 +1836,56 @@ You can access the Async Advanced WebServers at the displayed server IP, e.g. `1
 <p align="center">
     <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
 </p>
+
+
+---
+
+#### 9. Async_WebSocketsServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is debug terminal output when running example [Async_WebSocketsServer](examples/Async_WebSocketsServer) on RASPBERRY_PI_PICO_W using CYW43439 WiFi. The WSClient is using the provided [WSClient.py](examples/Async_WebSocketsServer/WSClient_Python/WSClient.py)
+
+
+```
+Starting Async_WebSocketsServer on RASPBERRY_PI_PICO_W
+AsyncTCP_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.3.0
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.77
+ws[Server: /ws][ClientID: 1] WSClient connected
+ws[Server: /ws][ClientID: 2] WSClient connected
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 1] WSClient disconnected
+ws[Server: /ws][ClientID: 3] WSClient connected
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
+```
+
+
+You can access the Async_WebSockets Servers at the displayed server IP, e.g. `192.168.2.77`
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_WebSocketsServer.png">
+</p>
+
 
 ---
 ---
@@ -1878,6 +1930,8 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
  5. Fix issue with slow browsers or network. Check [Target stops responding after variable time when using Firefox on Windows 10 #3](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/3)
  6. Add functions and example `Async_AdvancedWebServer_favicon` to support `favicon.ico`
  7. Support using `CString` to save heap to send `very large data`. Check [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
+ 8. Fix `crash` when using `AsyncWebSockets server` and add example [Async_WebSocketsServer](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer) to demo the AsyncWebSockets Server with a Python [WSClient.py](examples/Async_WebSocketsServer/WSClient_Python/WSClient.py)
+ 
  
 ---
 ---
@@ -1891,12 +1945,15 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
 3. Thanks to [salasidis](https://github.com/salasidis) aka [rs77can](https://forum.arduino.cc/u/rs77can) to discuss and make the following `marvellous` PRs in [Portenta_H7_AsyncWebServer library](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer)
 - [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8), leading to `v1.2.0` to support using `CString` to save heap to send `very large data`
 - [All memmove() removed - string no longer destroyed #11](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/11), leading to `v1.2.1` to remove `memmove()` and not to destroy String anymore
+4. Thanks to [drmue](https://github.com/drmue) to reportthe bug in [Can't connect to AsyncWebSocketServer_RP2040 via javascript #5](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/5), leading to `v1.3.0` to Fix crash when using AsyncWebSockets server
+
 
 <table>
   <tr>
     <td align="center"><a href="https://github.com/me-no-dev"><img src="https://github.com/me-no-dev.png" width="100px;" alt="me-no-dev"/><br /><sub><b>⭐️⭐️ Hristo Gochkov</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/revell1"><img src="https://github.com/revell1.png" width="100px;" alt="revell1"/><br /><sub><b>revell1</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/salasidis"><img src="https://github.com/salasidis.png" width="100px;" alt="salasidis"/><br /><sub><b>⭐️ salasidis</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/drmue"><img src="https://github.com/drmue.png" width="100px;" alt="drmue"/><br /><sub><b>drmue</b></sub></a><br /></td>
   </tr> 
 </table>
 

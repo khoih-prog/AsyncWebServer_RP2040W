@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.2.1
+  Version: 1.3.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -21,6 +21,7 @@
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
   1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -330,11 +331,7 @@ void AsyncWebServerRequest::_onTimeout(uint32_t time)
   RP2040W_AWS_UNUSED(time);
 
   AWS_LOGDEBUG3("TIMEOUT: time =", time, ", state =", _client->stateToString());
-  
-  // KH test
-  AWS_LOGINFO3("TIMEOUT: time =", time, ", state =", _client->stateToString());
-  //////
-  
+   
   _client->close();
   
   // KH, Important for RP2040W, or system will hang
@@ -944,12 +941,12 @@ void AsyncWebServerRequest::_parseLine()
       //end of headers
       _server->_rewriteRequest(this);
       _server->_attachHandler(this);
-      _removeNotInterestingHeaders();
+      //_removeNotInterestingHeaders();    // KH, Crashing WS if used
 
       if (_expectingContinue)
       {
         const char * response = "HTTP/1.1 100 Continue\r\n\r\n";
-        //_client->write(response, os_strlen(response));
+
         _client->write(response, strlen(response));
       }
 

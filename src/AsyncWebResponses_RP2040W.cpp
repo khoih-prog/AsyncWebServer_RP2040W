@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.2.1
+  Version: 1.3.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -21,6 +21,7 @@
   1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
   1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -246,6 +247,7 @@ size_t AsyncWebServerResponse::_ack(AsyncWebServerRequest *request, size_t len, 
   RP2040W_AWS_UNUSED(request);
   RP2040W_AWS_UNUSED(len);
   RP2040W_AWS_UNUSED(time);
+  
   return 0;
 }
 
@@ -275,6 +277,7 @@ size_t AsyncProgmemResponse::_fillBuffer(uint8_t *data, size_t len)
   {
     memcpy(data, _content + _readLength, len);
     _readLength += len;
+    
     return len;
   }
   
@@ -721,6 +724,7 @@ size_t AsyncAbstractResponse::_ack(AsyncWebServerRequest *request, size_t len, u
       if (readLen == RESPONSE_TRY_AGAIN)
       {
         free(buf);
+        
         return 0;
       }
 
@@ -837,11 +841,12 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
     {
       // closing placeholder not found, check if it's in the remaining file data
       memcpy(buf, pTemplateStart + 1, &data[len - 1] - pTemplateStart);
-      const size_t readFromCacheOrContent = _readDataFromCacheOrContent(buf + (&data[len - 1] - pTemplateStart), TEMPLATE_PARAM_NAME_LENGTH + 2 - (&data[len - 1] - pTemplateStart + 1));
+      const size_t readFromCacheOrContent = _readDataFromCacheOrContent(buf + (&data[len - 1] - pTemplateStart), 
+                                             TEMPLATE_PARAM_NAME_LENGTH + 2 - (&data[len - 1] - pTemplateStart + 1));
 
       if (readFromCacheOrContent)
       {
-        pTemplateEnd = (uint8_t*)memchr(buf + (&data[len - 1] - pTemplateStart), TEMPLATE_PLACEHOLDER, readFromCacheOrContent);
+        pTemplateEnd = (uint8_t*) memchr(buf + (&data[len - 1] - pTemplateStart), TEMPLATE_PLACEHOLDER, readFromCacheOrContent);
 
         if (pTemplateEnd)
         {
@@ -855,7 +860,8 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
         else // closing placeholder not found in file data, store found percent symbol as is and advance to the next position
         {
           // but first, store read file data in cache
-          _cache.insert(_cache.begin(), buf + (&data[len - 1] - pTemplateStart), buf + (&data[len - 1] - pTemplateStart) + readFromCacheOrContent);
+          _cache.insert(_cache.begin(), buf + (&data[len - 1] - pTemplateStart), 
+                        buf + (&data[len - 1] - pTemplateStart) + readFromCacheOrContent);
           ++pTemplateStart;
         }
       }
