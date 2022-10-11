@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.3.1](#Release-v131)
   * [Release v1.3.0](#Release-v130)
   * [Release v1.2.1](#Release-v121)
   * [Release v1.2.0](#Release-v120)
@@ -26,6 +27,11 @@
 ---
 
 ## Changelog
+
+#### Release v1.3.1
+
+1. Improve robustness of AsyncWebSockets server. Check [AsyncWebSocketServer_RP2040W crashes with "[AWS] ERROR: Too many messages queued" #6](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/6)
+2. Add example [Async_WebSocketsServer_Xtreme](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer_Xtreme) to demo the nearly highest possible WebSockets Server speed
 
 #### Release v1.3.0
 

@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.3.0
+  Version: 1.3.1
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -22,6 +22,7 @@
   1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
+  1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
  *****************************************************************************************************************************/
 
 #pragma once
@@ -34,11 +35,15 @@
 
 // AsyncTCP_RP2040W
 #include <AsyncTCP_RP2040W.h>
-#define WS_MAX_QUEUED_MESSAGES 32
-//#define WS_MAX_QUEUED_MESSAGES 8
 
-#define DEFAULT_MAX_WS_CLIENTS 8
-//#define DEFAULT_MAX_WS_CLIENTS 4
+// KH, Fix Message Queue too long error. Reduce from 32 to 4
+// Longer queue takes longer time to process. If system is slow, longer queue is worse
+// Anyway any overflowed message will be discarded later
+// ESP32 using 8
+#define WS_MAX_QUEUED_MESSAGES 4
+
+//#define DEFAULT_MAX_WS_CLIENTS 8
+#define DEFAULT_MAX_WS_CLIENTS 4
 
 #include "AsyncWebSynchronization_RP2040W.h"
 
@@ -379,7 +384,7 @@ class AsyncWebSocketClient
     /////////////////////////////////////////////////
 
     //data packets
-    inline void message(AsyncWebSocketMessage *message) 
+    void message(AsyncWebSocketMessage *message) 
     {
       _queueMessage(message);
     }
