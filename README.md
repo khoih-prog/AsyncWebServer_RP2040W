@@ -1893,9 +1893,9 @@ You can access the Async_WebSockets Servers at the displayed server IP, e.g. `19
 ---
 
 
-#### 10. Async_WebSocketsServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+#### 10. Async_WebSocketsServer_Xtreme on RASPBERRY_PI_PICO_W using CYW43439 WiFi
 
-Following is debug terminal output when running example [Async_WebSocketsServer](examples/Async_WebSocketsServer) on RASPBERRY_PI_PICO_W using CYW43439 WiFi. The WSClient is using the provided [WSClient.py](examples/Async_WebSocketsServer/WSClient_Python/WSClient.py)
+Following is debug terminal output when running example [Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme) on RASPBERRY_PI_PICO_W using CYW43439 WiFi.
 
 
 ```
