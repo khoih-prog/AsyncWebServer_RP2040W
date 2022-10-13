@@ -74,6 +74,17 @@ char temp[BUFFER_SIZE];
 
 void handleRoot(AsyncWebServerRequest *request)
 {
+  static uint32_t pageCount   = 0;
+  static uint32_t maxfreeHeap = 0;
+  static uint32_t minFreeHeap = 0xFFFFFFFF;
+  uint32_t curFreeHeap = rp2040.getFreeHeap();
+
+  if (maxfreeHeap < curFreeHeap)
+    maxfreeHeap = curFreeHeap;
+
+  if (minFreeHeap > curFreeHeap)
+    minFreeHeap = curFreeHeap;
+  
   digitalWrite(LED_BUILTIN, LED_ON);
 
   int sec = millis() / 1000;
@@ -84,7 +95,7 @@ void handleRoot(AsyncWebServerRequest *request)
   snprintf(temp, BUFFER_SIZE - 1,
            "<html>\
 <head>\
-<meta http-equiv='refresh' content='60'/>\
+<meta http-equiv='refresh' content='5'/>\
 <title>AsyncWebServer-%s</title>\
 <style>\
 body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
@@ -93,10 +104,11 @@ body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Col
 <body>\
 <h2>AsyncWebServer_RP2040W!</h2>\
 <h3>running WiFi on %s</h3>\
-<p>Uptime: %d d %02d:%02d:%02d</p>\
+<p>Uptime: %d d %02d:%02d:%02d, pageCount: %lu</p>\
+<p>Heap Free: %lu, Max: %lu, Min: %lu</p>\
 <img src=\"/test.svg\" />\
 </body>\
-</html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
+</html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60, ++pageCount, curFreeHeap, maxfreeHeap, minFreeHeap);
 
   request->send(200, "text/html", temp);
 
@@ -241,7 +253,7 @@ void setup()
 
   server.begin();
   
-  Serial.print(F("HTTP EthernetWebServer is @ IP : "));
+  Serial.print(F("AsyncWebServer is @ IP : "));
   Serial.println(WiFi.localIP());
 }
 
