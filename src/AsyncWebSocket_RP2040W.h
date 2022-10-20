@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.3.1
+  Version: 1.4.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -23,6 +23,7 @@
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
+  1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
  *****************************************************************************************************************************/
 
 #pragma once
@@ -204,6 +205,8 @@ class AsyncWebSocketMessageBuffer
 
 };
 
+/////////////////////////////////////////////////
+
 class AsyncWebSocketMessage 
 {
   protected:
@@ -238,6 +241,8 @@ class AsyncWebSocketMessage
     }
 };
 
+/////////////////////////////////////////////////
+
 class AsyncWebSocketBasicMessage: public AsyncWebSocketMessage 
 {
   private:
@@ -263,9 +268,9 @@ class AsyncWebSocketBasicMessage: public AsyncWebSocketMessage
     
     virtual void ack(size_t len, uint32_t time) override;
     virtual size_t send(AsyncClient *client) override;
-    
-    virtual bool reserve(size_t size);
 };
+
+/////////////////////////////////////////////////
 
 class AsyncWebSocketMultiMessage: public AsyncWebSocketMessage 
 {
@@ -293,6 +298,8 @@ class AsyncWebSocketMultiMessage: public AsyncWebSocketMessage
     virtual void ack(size_t len, uint32_t time) override ;
     virtual size_t send(AsyncClient *client) override ;
 };
+
+/////////////////////////////////////////////////
 
 class AsyncWebSocketClient 
 {
@@ -427,7 +434,11 @@ class AsyncWebSocketClient
     void _onData(void *pbuf, size_t plen);
 };
 
+/////////////////////////////////////////////////
+
 typedef std::function<void(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)> AwsEventHandler;
+
+/////////////////////////////////////////////////
 
 //WebServer Handler implementation that plays the role of a socket server
 class AsyncWebSocket: public AsyncWebHandler 
@@ -557,6 +568,8 @@ class AsyncWebSocket: public AsyncWebHandler
     AsyncWebSocketClientLinkedList getClients() const;
 };
 
+/////////////////////////////////////////////////
+
 //WebServer response to authenticate the socket and detach the tcp client from the web server request
 class AsyncWebSocketResponse: public AsyncWebServerResponse 
 {
@@ -577,5 +590,6 @@ class AsyncWebSocketResponse: public AsyncWebServerResponse
     }
 };
 
+/////////////////////////////////////////////////
 
 #endif /* RP2040W_ASYNCWEBSOCKET_H_ */

@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.3.1
+  Version: 1.4.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -23,6 +23,7 @@
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
+  1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
  *****************************************************************************************************************************/
 
 #include "Arduino.h"
@@ -472,28 +473,6 @@ size_t AsyncWebSocketBasicMessage::send(AsyncClient *client)
 }
 
 /////////////////////////////////////////////////
-
-bool AsyncWebSocketBasicMessage::reserve(size_t size)
-{
-  if (size)
-  {
-    _data = (uint8_t*) malloc(size + 1);
-
-    if (_data)
-    {
-      memset(_data, 0, size);
-      
-      _len    = size;
-      _status = WS_MSG_SENDING;
-      
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
 /*
@@ -572,7 +551,7 @@ size_t AsyncWebSocketMultiMessage::send(AsyncClient *client)
   {
     _status = WS_MSG_ERROR;
     
-    AWS_LOGDEBUG2("WS_MSG_ERROR:", _sent, _len);
+    AWS_LOGDEBUG3("WS_MSG_ERROR: _sent =", _sent, ", _len =", _len);
 
     return 0;
   }
@@ -1000,7 +979,8 @@ void AsyncWebSocketClient::_onData(void *pbuf, size_t plen)
         if (datalen != AWSC_PING_PAYLOAD_LEN || memcmp(AWSC_PING_PAYLOAD, data, AWSC_PING_PAYLOAD_LEN) != 0)
           _server->_handleEvent(this, WS_EVT_PONG, NULL, data, datalen);
       }
-      else if (_pinfo.opcode < 8) { //continuation or text/binary frame
+      else if (_pinfo.opcode < 8) 
+      { //continuation or text/binary frame
         _server->_handleEvent(this, WS_EVT_DATA, (void *)&_pinfo, data, datalen);
       }
     }

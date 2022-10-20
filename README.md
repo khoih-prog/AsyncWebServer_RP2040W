@@ -15,6 +15,7 @@
 ## Table of contents
 
 * [Table of contents](#table-of-contents)
+* [Important Note from v1.4.0](#Important-Note-from-v140)
 * [Important Note from v1.2.0](#Important-Note-from-v120)
 * [Why do we need this AsyncWebServer_RP2040W library](#why-do-we-need-this-AsyncWebServer_RP2040W-library)
   * [Features](#features)
@@ -93,6 +94,8 @@
   * [14. Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
   * [15. Async_WebSocketsServer](examples/Async_WebSocketsServer) **New**
   * [16. Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme) **New**
+  * [17. AsyncFSWebServer](examples/AsyncFSWebServer) **New**
+  * [18. AsyncFSWebServer_Complex](examples/AsyncFSWebServer_Complex) **New**
 * [Example Async_AdvancedWebServer](#Example-Async_AdvancedWebServer)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. Async_AdvancedWebServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#1-Async_AdvancedWebServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
@@ -105,6 +108,7 @@
   * [8. Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W](#8-Async_AdvancedWebServer_MemoryIssues_Send_CString-on-RASPBERRY_PI_PICO_W)
   * [9. Async_WebSocketsServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#9-Async_WebSocketsServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [10. Async_WebSocketsServer_Xtreme on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#10-Async_WebSocketsServer_Xtreme-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
+  * [11. AsyncFSWebServer_Complex on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#11-AsyncFSWebServer_Complex-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
@@ -116,6 +120,21 @@
 * [Copyright](#copyright)
 
 ---
+---
+
+### Important Note from v1.4.0
+
+The new `v1.4.0+` has added a new and powerful feature to use `LittleFS` functions, such as AsyncFSWebServer
+
+Check these new examples
+
+1. [AsyncFSWebServer](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncFSWebServer)
+2. [AsyncFSWebServer_Complex](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncFSWebServer_Complex)
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/AsyncFSWebServer_Complex.png">
+</p>
+
 ---
 
 ### Important Note from v1.2.0
@@ -188,7 +207,6 @@ request->send(200, textPlainStr, cStr, false);
 The required additional HEAP is about **1 times of the CString size**. This way is the best and **most efficient way** to use by avoiding of `unnecessary copies` of the CString in HEAP
 
 
-
 ---
 ---
 
@@ -235,7 +253,7 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 ## Prerequisites
 
  1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
- 2. [`Earle Philhower's arduino-pico core v2.6.0+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
+ 2. [`Earle Philhower's arduino-pico core v2.6.1+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
  3. [`AsyncTCP_RP2040W library v1.1.0+`](https://github.com/khoih-prog/AsyncTCP_RP2040W) for RASPBERRY_PI_PICO_W with CYW43439 WiFi. [![GitHub release](https://img.shields.io/github/release/khoih-prog/AsyncTCP_RP2040W.svg)](https://github.com/khoih-prog/AsyncTCP_RP2040W/releases/latest)
 
 ---
@@ -790,6 +808,7 @@ request->send(response);
 ---
 
 ## Param Rewrite With Matching
+
 It is possible to rewrite the request url with parameter matchg. Here is an example with one parameter:
 Rewrite for example "/radio/{frequence}" -> "/radio?f={frequence}"
 
@@ -893,7 +912,6 @@ without starting another listening service or using different port
 ### Async WebSocket Event
 
 ```cpp
-
 void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)
 {
   if(type == WS_EVT_CONNECT)
@@ -1511,7 +1529,9 @@ build_flags =
 13. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
 14. [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
 15. [Async_WebSocketsServer](examples/Async_WebSocketsServer) **New**
-15. [Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme) **New**
+16. [Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme) **New**
+17. [AsyncFSWebServer](examples/AsyncFSWebServer) **New**
+18. [AsyncFSWebServer_Complex](examples/AsyncFSWebServer_Complex) **New**
 
 
 ---
@@ -1915,6 +1935,45 @@ You can access the Async_WebSockets Servers at the displayed server IP, e.g. `19
 </p>
 
 
+---
+
+
+#### 11. AsyncFSWebServer_Complex on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+
+Following is debug terminal output when running example [AsyncFSWebServer_Complex](examples/AsyncFSWebServer_Complex) on RASPBERRY_PI_PICO_W using CYW43439 WiFi.
+
+
+```
+Start AsyncFSWebServer_Complex on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.4.0
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.77
+Opening / directory
+FS File: CanadaFlag_1.png, size: 40.25KB
+FS File: CanadaFlag_2.png, size: 8.12KB
+FS File: CanadaFlag_3.jpg, size: 10.89KB
+FS File: css, size: 0B
+FS File: edit.htm.gz, size: 4.02KB
+FS File: favicon.ico, size: 1.12KB
+FS File: graphs.js.gz, size: 1.92KB
+FS File: index.htm, size: 3.63KB
+FS File: js, size: 0B
+
+AsyncWebServer started @192.168.2.77
+Open http://192.168.2.77/edit to see the file browser
+AsyncFSEditor::handleRequest: Sending AsyncWebServerResponse
+
+```
+
+
+You can access the Async_WebSockets Servers at the displayed server IP, e.g. `192.168.2.77`
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/AsyncFSWebServer_Complex.png">
+</p>
+
 
 ---
 ---
@@ -1961,7 +2020,9 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
  7. Support using `CString` to save heap to send `very large data`. Check [request->send(200, textPlainStr, jsonChartDataCharStr); - Without using String Class - to save heap #8](https://github.com/khoih-prog/Portenta_H7_AsyncWebServer/pull/8)
  8. Fix `crash` when using `AsyncWebSockets server` and add example [Async_WebSocketsServer](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer) to demo the AsyncWebSockets Server with a Python [WSClient.py](examples/Async_WebSocketsServer/WSClient_Python/WSClient.py)
  9. Improve robustness of AsyncWebSockets server. Check [AsyncWebSocketServer_RP2040W crashes with "[AWS] ERROR: Too many messages queued" #6](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/6) and add example [Async_WebSocketsServer_Xtreme](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer_Xtreme) to demo the nearly highest possible WebSockets Server speed 
- 
+10. Add `LittleFS` functions such as `AsyncFSWebServer`
+
+
 ---
 ---
 

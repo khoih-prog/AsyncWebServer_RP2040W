@@ -15,7 +15,7 @@ If you don't find anything, please [open a new issue](https://github.com/khoih-p
 Please ensure to specify the following:
 
 * Arduino IDE version (e.g. 1.8.19) or Platform.io version
-* `RP2040` Core Version (e.g. RP2040 core v2.6.0)
+* `RP2040` Core Version (e.g. RP2040 core v2.6.1)
 * `RP2040W` Board type (e.g. RASPBERRY_PI_PICO_W)
 * Contextual information (e.g. what you were trying to achieve)
 * Simplest possible steps to reproduce
@@ -28,10 +28,10 @@ Please ensure to specify the following:
 
 ```
 Arduino IDE version: 1.8.19
-RP2040 core v2.6.0
+RP2040 core v2.6.1
 RASPBERRY_PI_PICO_W Module
 OS: Ubuntu 20.04 LTS
-Linux xy-Inspiron-3593 5.15.0-48-generic #54~20.04.1-Ubuntu SMP Thu Sep 1 16:17:26 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+Linux xy-Inspiron-3593 5.15.0-50-generic #56~20.04.1-Ubuntu SMP Tue Sep 27 15:51:29 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
 
 Context:
 I encountered a crash while using this library

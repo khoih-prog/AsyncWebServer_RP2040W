@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.3.1
+  Version: 1.4.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -23,6 +23,7 @@
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
+  1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
  *****************************************************************************************************************************/
 
 #pragma once
@@ -33,7 +34,7 @@
 #include <string>
 
 #ifdef ASYNCWEBSERVER_REGEX
-#include <regex>
+  #include <regex>
 #endif
 
 #include "stddef.h"
@@ -44,23 +45,28 @@
 class AsyncStaticWebHandler: public AsyncWebHandler
 {
   private:
-    uint8_t _countBits(const uint8_t value) const;
+    bool    _getFile(AsyncWebServerRequest *request);
+    bool    _fileExists(AsyncWebServerRequest *request, const String& path);
+    uint8_t   _countBits(const uint8_t value) const;
 
   protected:
-    String _uri;
-    String _path;
-    String _cache_control;
-    String _last_modified;
+    FS      _fs;
+    String  _uri;
+    String  _path;
+    String  _default_file;
+    String  _cache_control;
+    String  _last_modified;
     AwsTemplateProcessor _callback;
-    bool _isDir;
-    bool _gzipFirst;
+    bool    _isDir;
+    bool    _gzipFirst;
     uint8_t _gzipStats;
 
   public:
-    AsyncStaticWebHandler(const char* uri, const char* path, const char* cache_control);
+    AsyncStaticWebHandler(const char* uri, FS& fs, const char* path, const char* cache_control);
     virtual bool canHandle(AsyncWebServerRequest *request) override final;
     virtual void handleRequest(AsyncWebServerRequest *request) override final;
     AsyncStaticWebHandler& setIsDir(bool isDir);
+    AsyncStaticWebHandler& setDefaultFile(const char* filename);
     AsyncStaticWebHandler& setCacheControl(const char* cache_control);
     AsyncStaticWebHandler& setLastModified(const char* last_modified);
     AsyncStaticWebHandler& setLastModified(struct tm* last_modified);
@@ -73,7 +79,7 @@ class AsyncStaticWebHandler: public AsyncWebHandler
     AsyncStaticWebHandler& setTemplateProcessor(AwsTemplateProcessor newCallback)
     {
       _callback = newCallback;
-      
+
       return *this;
     }
 };
@@ -86,9 +92,9 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
   protected:
     String _uri;
     WebRequestMethodComposite _method;
-    ArRequestHandlerFunction _onRequest;
-    ArUploadHandlerFunction _onUpload;
-    ArBodyHandlerFunction _onBody;
+    ArRequestHandlerFunction  _onRequest;
+    ArUploadHandlerFunction   _onUpload;
+    ArBodyHandlerFunction     _onBody;
     bool _isRegex;
 
   public:
@@ -110,7 +116,7 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
     }
 
     /////////////////////////////////////////////////
-    
+
     inline void onRequest(ArRequestHandlerFunction fn)
     {
       _onRequest = fn;

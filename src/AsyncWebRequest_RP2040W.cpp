@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.3.1
+  Version: 1.4.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -23,6 +23,7 @@
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
+  1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -257,9 +258,8 @@ void AsyncWebServerRequest::_onData(void *buf, size_t len)
 
     break;
   }
-  
+
   // KH, Important for RP2040W, or system will hang
-  //delay(0);
   yield();
 }
 
@@ -284,12 +284,11 @@ void AsyncWebServerRequest::_removeNotInterestingHeaders()
 void AsyncWebServerRequest::_onPoll()
 {
   if (_response != NULL && _client != NULL && _client->canSend() && !_response->_finished())
-  {   
+  {
     _response->_ack(this, 0, 0);
   }
-  
+
   // KH, Important for RP2040W, or system will hang
-  //delay(0);
   yield();
 }
 
@@ -312,9 +311,8 @@ void AsyncWebServerRequest::_onAck(size_t len, uint32_t time)
       delete r;
     }
   }
-  
+
   // KH, Important for RP2040W, or system will hang
-  //delay(0);
   yield();
 }
 
@@ -332,11 +330,10 @@ void AsyncWebServerRequest::_onTimeout(uint32_t time)
   RP2040W_AWS_UNUSED(time);
 
   AWS_LOGDEBUG3("TIMEOUT: time =", time, ", state =", _client->stateToString());
-   
+
   _client->close();
-  
+
   // KH, Important for RP2040W, or system will hang
-  //delay(0);
   yield();
 }
 
@@ -357,9 +354,8 @@ void AsyncWebServerRequest::_onDisconnect()
   }
 
   _server->_handleDisconnect(this);
-   
+
   // KH, Important for RP2040W, or system will hang
-  //delay(0);
   yield();
 }
 
@@ -653,19 +649,19 @@ void AsyncWebServerRequest::_parseMultipartPostByte(uint8_t data, bool last)
     if (_parsedLength < 2 && data != '-')
     {
       _multiParseState = PARSE_ERROR;
-      
+
       return;
     }
     else if (_parsedLength - 2 < _boundary.length() && _boundary.c_str()[_parsedLength - 2] != data)
     {
       _multiParseState = PARSE_ERROR;
-      
+
       return;
     }
     else if (_parsedLength - 2 == _boundary.length() && data != '\r')
     {
       _multiParseState = PARSE_ERROR;
-      
+
       return;
     }
     else if (_parsedLength - 3 == _boundary.length())
@@ -673,7 +669,7 @@ void AsyncWebServerRequest::_parseMultipartPostByte(uint8_t data, bool last)
       if (data != '\n')
       {
         _multiParseState = PARSE_ERROR;
-        
+
         return;
       }
 
@@ -736,7 +732,7 @@ void AsyncWebServerRequest::_parseMultipartPostByte(uint8_t data, bool last)
       else
       {
         _multiParseState = WAIT_FOR_RETURN1;
-        
+
         //value starts from here
         _itemSize = 0;
         _itemStartIndex = _parsedLength;
@@ -752,7 +748,7 @@ void AsyncWebServerRequest::_parseMultipartPostByte(uint8_t data, bool last)
           if (_itemBuffer == NULL)
           {
             _multiParseState = PARSE_ERROR;
-            
+
             return;
           }
 
@@ -827,7 +823,7 @@ void AsyncWebServerRequest::_parseMultipartPostByte(uint8_t data, bool last)
     else if (_boundaryPosition == _boundary.length() - 1)
     {
       _multiParseState = DASH3_OR_RETURN2;
-      
+
       if (!_itemIsFile)
       {
         _addParam(new AsyncWebParameter(_itemName, _itemValue, true));
@@ -858,9 +854,8 @@ void AsyncWebServerRequest::_parseMultipartPostByte(uint8_t data, bool last)
   {
     if (data == '-' && (_contentLength - _parsedLength - 4) != 0)
     {
-      AWS_LOGDEBUG1("ERROR: The parser got to the end of the POST but is expecting more bytes =", (_contentLength - _parsedLength - 4));
-      AWS_LOGDEBUG("Drop an issue so we can have more info on the matter!");
-      
+      AWS_LOGDEBUG1("ERROR: The parser at the end of the POST but expecting more bytes =", (_contentLength - _parsedLength - 4));
+
       _contentLength = _parsedLength + 4;//lets close the request gracefully
     }
 
@@ -1078,16 +1073,16 @@ void AsyncWebServerRequest::send(AsyncWebServerResponse *response)
   _response = response;
 
   if (_response == NULL)
-  {   
+  {
     _client->close(true);
-       
+
     _onDisconnect();
 
     return;
   }
 
   if (!_response->_sourceValid())
-  {    
+  {
     delete response;
     _response = NULL;
     send(500);
@@ -1096,7 +1091,7 @@ void AsyncWebServerRequest::send(AsyncWebServerResponse *response)
   {
     _client->setRxTimeout(0);
     _response->_respond(this);
-  }  
+  }
 }
 
 //RSMOD///////////////////////////////////////////////
@@ -1114,10 +1109,30 @@ AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(int code, const St
 
 /////////////////////////////////////////////////
 // KH add for favicon
-AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(int code, const String& contentType, const uint8_t * content, size_t len, 
-                                                              AwsTemplateProcessor callback)
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(int code, const String& contentType, const uint8_t * content, size_t len,
+                                                AwsTemplateProcessor callback)
 {
   return new AsyncProgmemResponse(code, contentType, content, len, callback);
+}
+
+/////////////////////////////////////////////////
+
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(FS &fs, const String& path, const String& contentType,
+                                                bool download, AwsTemplateProcessor callback)
+{
+  if (fs.exists(path) || (!download && fs.exists(path + ".gz")))
+    return new AsyncFileResponse(fs, path, contentType, download, callback);
+
+  return NULL;
+}
+
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(File content, const String& path, const String& contentType,
+                                                bool download, AwsTemplateProcessor callback)
+{
+  if (content == true)
+    return new AsyncFileResponse(content, path, contentType, download, callback);
+
+  return NULL;
 }
 
 /////////////////////////////////////////////////
@@ -1129,14 +1144,16 @@ AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(Stream &stream, co
 
 /////////////////////////////////////////////////
 
-AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(const String& contentType, size_t len, AwsResponseFiller callback, AwsTemplateProcessor templateCallback)
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse(const String& contentType, size_t len, AwsResponseFiller callback, 
+                                                AwsTemplateProcessor templateCallback)
 {
   return new AsyncCallbackResponse(contentType, len, callback, templateCallback);
 }
 
 /////////////////////////////////////////////////
 
-AsyncWebServerResponse * AsyncWebServerRequest::beginChunkedResponse(const String& contentType, AwsResponseFiller callback, AwsTemplateProcessor templateCallback)
+AsyncWebServerResponse * AsyncWebServerRequest::beginChunkedResponse(const String& contentType, AwsResponseFiller callback, 
+                                                AwsTemplateProcessor templateCallback)
 {
   if (_version)
     return new AsyncChunkedResponse(contentType, callback, templateCallback);
@@ -1149,6 +1166,22 @@ AsyncWebServerResponse * AsyncWebServerRequest::beginChunkedResponse(const Strin
 AsyncResponseStream * AsyncWebServerRequest::beginResponseStream(const String& contentType, size_t bufferSize)
 {
   return new AsyncResponseStream(contentType, bufferSize);
+}
+
+/////////////////////////////////////////////////
+
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse_P(int code, const String& contentType, const uint8_t * content,
+                                                size_t len, AwsTemplateProcessor callback)
+{
+  return new AsyncProgmemResponse(code, contentType, content, len, callback);
+}
+
+/////////////////////////////////////////////////
+
+AsyncWebServerResponse * AsyncWebServerRequest::beginResponse_P(int code, const String& contentType, PGM_P content,
+                                                AwsTemplateProcessor callback)
+{
+  return beginResponse_P(code, contentType, (const uint8_t *)content, strlen_P(content), callback);
 }
 
 //RSMOD///////////////////////////////////////////////
@@ -1174,6 +1207,32 @@ void AsyncWebServerRequest::send(int code, const String& contentType, const Stri
 
 /////////////////////////////////////////////////
 
+void AsyncWebServerRequest::send(FS &fs, const String& path, const String& contentType, bool download,
+                                 AwsTemplateProcessor callback)
+{
+  if (fs.exists(path) || (!download && fs.exists(path + ".gz")))
+  {
+    send(beginResponse(fs, path, contentType, download, callback));
+  }
+  else
+    send(404);
+}
+
+/////////////////////////////////////////////////
+
+void AsyncWebServerRequest::send(File content, const String& path, const String& contentType, bool download,
+                                 AwsTemplateProcessor callback)
+{
+  if (content == true)
+  {
+    send(beginResponse(content, path, contentType, download, callback));
+  }
+  else
+    send(404);
+}
+
+/////////////////////////////////////////////////
+
 void AsyncWebServerRequest::send(Stream &stream, const String& contentType, size_t len, AwsTemplateProcessor callback)
 {
   send(beginResponse(stream, contentType, len, callback));
@@ -1181,14 +1240,16 @@ void AsyncWebServerRequest::send(Stream &stream, const String& contentType, size
 
 /////////////////////////////////////////////////
 
-void AsyncWebServerRequest::send(const String& contentType, size_t len, AwsResponseFiller callback, AwsTemplateProcessor templateCallback)
+void AsyncWebServerRequest::send(const String& contentType, size_t len, AwsResponseFiller callback, 
+                                 AwsTemplateProcessor templateCallback)
 {
   send(beginResponse(contentType, len, callback, templateCallback));
 }
 
 /////////////////////////////////////////////////
 
-void AsyncWebServerRequest::sendChunked(const String& contentType, AwsResponseFiller callback, AwsTemplateProcessor templateCallback)
+void AsyncWebServerRequest::sendChunked(const String& contentType, AwsResponseFiller callback, 
+                                        AwsTemplateProcessor templateCallback)
 {
   send(beginChunkedResponse(contentType, callback, templateCallback));
 }

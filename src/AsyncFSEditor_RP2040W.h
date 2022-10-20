@@ -1,5 +1,5 @@
 /****************************************************************************************************************************
-  AsyncWebAuthentication_RP2040W.h
+  AsyncFSEditor_RP2040W.h
   
   For RP2040W with CYW43439 WiFi
   
@@ -26,26 +26,37 @@
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
  *****************************************************************************************************************************/
 
-#pragma once
+#ifndef RP2040W_ASYNC_FSEDITOR_H_
+#define RP2040W_ASYNC_FSEDITOR_H_
 
-#ifndef RP2040W_ASYNCWEB_AUTHENTICATION_H_
-#define RP2040W_ASYNCWEB_AUTHENTICATION_H_
+#include "AsyncWebServer_RP2040W.h"
 
-#include "Arduino.h"
-#include "AsyncWebServer_RP2040W_Debug.h"
+#include <LittleFS.h>
 
-/////////////////////////////////////////////////
+class AsyncFSEditor: public AsyncWebHandler
+{
+  private:
 
-bool checkBasicAuthentication(const char * header, const char * username, const char * password);
+    FS _fs;
 
-String requestDigestAuthentication(const char * realm);
+    String _username;
+    String _password;
+    bool _authenticated;
+    uint32_t _startTime;
 
-bool checkDigestAuthentication(const char * header, const char * method, const char * username, const char * password, 
-     const char * realm, bool passwordIsHash, const char * nonce, const char * opaque, const char * uri);
+  public:
 
-//for storing hashed versions on the device that can be authenticated against
-String generateDigestHash(const char * username, const char * password, const char * realm);
+    AsyncFSEditor(const String& username = String(), const String& password = String(), const FS& fs = LittleFS);
 
-/////////////////////////////////////////////////
+    virtual bool canHandle(AsyncWebServerRequest *request) override final;
+    virtual void handleRequest(AsyncWebServerRequest *request) override final;
+    virtual void handleUpload(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data,
+                              size_t len, bool final) override final;
 
-#endif    // ARP2040W_SYNCWEB_AUTHENTICATIO_H_
+    virtual bool isRequestHandlerTrivial() override final
+    {
+      return false;
+    }
+};
+
+#endif // RP2040W_ASYNC_FSEDITOR_H_

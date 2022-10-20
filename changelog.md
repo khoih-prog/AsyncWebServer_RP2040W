@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.4.0](#Release-v140)
   * [Release v1.3.1](#Release-v131)
   * [Release v1.3.0](#Release-v130)
   * [Release v1.2.1](#Release-v121)
@@ -27,6 +28,11 @@
 ---
 
 ## Changelog
+
+#### Release v1.4.0
+
+1. Add `LittleFS` functions such as AsyncFSWebServer
+2. Add examples [AsyncFSWebServer](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncFSWebServer) and [AsyncFSWebServer_Complex](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncFSWebServer_Complex) to demo the new feature
 
 #### Release v1.3.1
 

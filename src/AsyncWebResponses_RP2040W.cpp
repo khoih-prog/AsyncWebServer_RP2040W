@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
  
-  Version: 1.3.1
+  Version: 1.4.0
   
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -23,6 +23,7 @@
   1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
+  1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -37,7 +38,6 @@
 
 /////////////////////////////////////////////////
 
-// Since ESP8266 does not link memchr by default, here's its implementation.
 void* memchr(void* ptr, int ch, size_t count)
 {
   unsigned char* p = static_cast<unsigned char*>(ptr);
@@ -58,7 +58,7 @@ void* memchr(void* ptr, int ch, size_t count)
  * */
 const char* AsyncWebServerResponse::_responseCodeToString(int code)
 {
-  switch (code) 
+  switch (code)
   {
     case 100: return "Continue";
     case 101: return "Switching Protocols";
@@ -237,7 +237,7 @@ bool AsyncWebServerResponse::_sourceValid() const
 void AsyncWebServerResponse::_respond(AsyncWebServerRequest *request)
 {
   _state = RESPONSE_END;
-   
+
   request->client()->close();
 }
 
@@ -248,7 +248,7 @@ size_t AsyncWebServerResponse::_ack(AsyncWebServerRequest *request, size_t len, 
   RP2040W_AWS_UNUSED(request);
   RP2040W_AWS_UNUSED(len);
   RP2040W_AWS_UNUSED(time);
-  
+
   return 0;
 }
 
@@ -259,7 +259,7 @@ size_t AsyncWebServerResponse::_ack(AsyncWebServerRequest *request, size_t len, 
    Fake Progmem Response
  * */
 
-AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, const uint8_t * content, size_t len, AwsTemplateProcessor callback): AsyncAbstractResponse(callback) 
+AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, const uint8_t * content, size_t len, AwsTemplateProcessor callback): AsyncAbstractResponse(callback)
 {
   _code          = code;
   _content       = content;
@@ -270,21 +270,21 @@ AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, 
 
 ////////////////////////////////////////////////
 
-size_t AsyncProgmemResponse::_fillBuffer(uint8_t *data, size_t len) 
+size_t AsyncProgmemResponse::_fillBuffer(uint8_t *data, size_t len)
 {
   size_t left = _contentLength - _readLength;
-  
-  if (left > len) 
+
+  if (left > len)
   {
     memcpy(data, _content + _readLength, len);
     _readLength += len;
-    
+
     return len;
   }
-  
+
   memcpy(data, _content + _readLength, left);
   _readLength += left;
-  
+
   return left;
 }
 
@@ -326,9 +326,9 @@ AsyncBasicResponse::AsyncBasicResponse(int code, const String& contentType, cons
 {
   _code = code;
   _content = content;
-  
+
   _contentCstr = nullptr;        // RSMOD
-  
+
   _contentType = contentType;
   _partialHeader = String();
 
@@ -468,7 +468,7 @@ void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
       _content = out + _content;
       _contentLength += outLen;
     }
-    
+
     _state = RESPONSE_CONTENT;
   }
 
@@ -520,7 +520,6 @@ size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint
     }
 
     // if we are here - there is no _partialHJeader to send
-
     AWS_LOGDEBUG3("AsyncBasicResponse::_ack : available =", available, ", space =", space );
 
     //we can fit in this packet
@@ -557,7 +556,7 @@ size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint
         s[space] = '\0';
         out = String(s);
         _contentCstr += space;
-        
+
         free(s);
       }
       else
@@ -714,7 +713,9 @@ size_t AsyncAbstractResponse::_ack(AsyncWebServerRequest *request, size_t len, u
 
       buf[outLen++] = '\r';
       buf[outLen++] = '\n';
+      
       outLen += readLen;
+      
       buf[outLen++] = '\r';
       buf[outLen++] = '\n';
     }
@@ -725,7 +726,7 @@ size_t AsyncAbstractResponse::_ack(AsyncWebServerRequest *request, size_t len, u
       if (readLen == RESPONSE_TRY_AGAIN)
       {
         free(buf);
-        
+
         return 0;
       }
 
@@ -842,8 +843,8 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
     {
       // closing placeholder not found, check if it's in the remaining file data
       memcpy(buf, pTemplateStart + 1, &data[len - 1] - pTemplateStart);
-      const size_t readFromCacheOrContent = _readDataFromCacheOrContent(buf + (&data[len - 1] - pTemplateStart), 
-                                             TEMPLATE_PARAM_NAME_LENGTH + 2 - (&data[len - 1] - pTemplateStart + 1));
+      const size_t readFromCacheOrContent = _readDataFromCacheOrContent(buf + (&data[len - 1] - pTemplateStart),
+                                            TEMPLATE_PARAM_NAME_LENGTH + 2 - (&data[len - 1] - pTemplateStart + 1));
 
       if (readFromCacheOrContent)
       {
@@ -861,7 +862,7 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
         else // closing placeholder not found in file data, store found percent symbol as is and advance to the next position
         {
           // but first, store read file data in cache
-          _cache.insert(_cache.begin(), buf + (&data[len - 1] - pTemplateStart), 
+          _cache.insert(_cache.begin(), buf + (&data[len - 1] - pTemplateStart),
                         buf + (&data[len - 1] - pTemplateStart) + readFromCacheOrContent);
           ++pTemplateStart;
         }
@@ -927,6 +928,132 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
   } // while(pTemplateStart)
 
   return len;
+}
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+/*
+   File Response
+ * */
+
+AsyncFileResponse::~AsyncFileResponse()
+{
+  if (_content)
+    _content.close();
+}
+
+/////////////////////////////////////////////////
+
+void AsyncFileResponse::_setContentType(const String& path)
+{
+  if      (path.endsWith(".html"))   _contentType = "text/html";
+  else if (path.endsWith(".htm"))   _contentType = "text/html";
+  else if (path.endsWith(".css"))   _contentType = "text/css";
+  else if (path.endsWith(".json"))  _contentType = "application/json";
+  else if (path.endsWith(".js"))    _contentType = "application/javascript";
+  else if (path.endsWith(".png"))   _contentType = "image/png";
+  else if (path.endsWith(".gif"))   _contentType = "image/gif";
+  else if (path.endsWith(".jpg"))   _contentType = "image/jpeg";
+  else if (path.endsWith(".ico"))   _contentType = "image/x-icon";
+  else if (path.endsWith(".svg"))   _contentType = "image/svg+xml";
+  else if (path.endsWith(".eot"))   _contentType = "font/eot";
+  else if (path.endsWith(".woff"))  _contentType = "font/woff";
+  else if (path.endsWith(".woff2")) _contentType = "font/woff2";
+  else if (path.endsWith(".ttf"))   _contentType = "font/ttf";
+  else if (path.endsWith(".xml"))   _contentType = "text/xml";
+  else if (path.endsWith(".pdf"))   _contentType = "application/pdf";
+  else if (path.endsWith(".zip"))   _contentType = "application/zip";
+  else if (path.endsWith(".gz"))     _contentType = "application/x-gzip";
+  else                              _contentType = "text/plain";
+}
+
+/////////////////////////////////////////////////
+
+AsyncFileResponse::AsyncFileResponse(FS &fs, const String& path, const String& contentType, bool download,
+                                     AwsTemplateProcessor callback): AsyncAbstractResponse(callback)
+{
+  _code = 200;
+  _path = path;
+
+  if (!download && !fs.exists(_path) && fs.exists(_path + ".gz"))
+  {
+    _path = _path + ".gz";
+    addHeader("Content-Encoding", "gzip");
+    _callback = nullptr; // Unable to process zipped templates
+    _sendContentLength = true;
+    _chunked = false;
+  }
+
+  _content = fs.open(_path, "r");
+  _contentLength = _content.size();
+
+  if (contentType == "")
+    _setContentType(path);
+  else
+    _contentType = contentType;
+
+  int filenameStart = path.lastIndexOf('/') + 1;
+  char buf[26 + path.length() - filenameStart];
+  char* filename = (char*)path.c_str() + filenameStart;
+
+  if (download)
+  {
+    // set filename and force download
+    snprintf(buf, sizeof (buf), "attachment; filename=\"%s\"", filename);
+  }
+  else
+  {
+    // set filename and force rendering
+    snprintf(buf, sizeof (buf), "inline; filename=\"%s\"", filename);
+  }
+
+  addHeader("Content-Disposition", buf);
+}
+
+/////////////////////////////////////////////////
+
+AsyncFileResponse::AsyncFileResponse(File content, const String& path, const String& contentType, bool download,
+                                     AwsTemplateProcessor callback): AsyncAbstractResponse(callback)
+{
+  _code = 200;
+  _path = path;
+
+  if (!download && String(content.name()).endsWith(".gz") && !path.endsWith(".gz"))
+  {
+    addHeader("Content-Encoding", "gzip");
+    _callback = nullptr; // Unable to process gzipped templates
+    _sendContentLength = true;
+    _chunked = false;
+  }
+
+  _content = content;
+  _contentLength = _content.size();
+
+  if (contentType == "")
+    _setContentType(path);
+  else
+    _contentType = contentType;
+
+  int filenameStart = path.lastIndexOf('/') + 1;
+  char buf[26 + path.length() - filenameStart];
+  char* filename = (char*)path.c_str() + filenameStart;
+
+  if (download)
+  {
+    snprintf(buf, sizeof (buf), "attachment; filename=\"%s\"", filename);
+  }
+  else
+  {
+    snprintf(buf, sizeof (buf), "inline; filename=\"%s\"", filename);
+  }
+
+  addHeader("Content-Disposition", buf);
+}
+
+size_t AsyncFileResponse::_fillBuffer(uint8_t *data, size_t len)
+{
+  return _content.read(data, len);
 }
 
 /////////////////////////////////////////////////
