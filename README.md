@@ -1938,7 +1938,7 @@ You can access the Async_WebSockets Servers at the displayed server IP, e.g. `19
 ---
 
 
-#### 11. AsyncFSWebServer_Complex on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+#### 11. AsyncFSWebServer_Complex on RASPBERRY_PI_PICO_W using CYW43439 WiFi
 
 Following is debug terminal output when running example [AsyncFSWebServer_Complex](examples/AsyncFSWebServer_Complex) on RASPBERRY_PI_PICO_W using CYW43439 WiFi.
 
