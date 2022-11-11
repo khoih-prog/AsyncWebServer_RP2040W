@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   AsyncWebResponses_RP2040W.cpp
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
- 
-  Version: 1.4.0
-  
+
+  Version: 1.4.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
@@ -24,6 +24,7 @@
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
+  1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -60,47 +61,128 @@ const char* AsyncWebServerResponse::_responseCodeToString(int code)
 {
   switch (code)
   {
-    case 100: return "Continue";
-    case 101: return "Switching Protocols";
-    case 200: return "OK";
-    case 201: return "Created";
-    case 202: return "Accepted";
-    case 203: return "Non-Authoritative Information";
-    case 204: return "No Content";
-    case 205: return "Reset Content";
-    case 206: return "Partial Content";
-    case 300: return "Multiple Choices";
-    case 301: return "Moved Permanently";
-    case 302: return "Found";
-    case 303: return "See Other";
-    case 304: return "Not Modified";
-    case 305: return "Use Proxy";
-    case 307: return "Temporary Redirect";
-    case 400: return "Bad Request";
-    case 401: return "Unauthorized";
-    case 402: return "Payment Required";
-    case 403: return "Forbidden";
-    case 404: return "Not Found";
-    case 405: return "Method Not Allowed";
-    case 406: return "Not Acceptable";
-    case 407: return "Proxy Authentication Required";
-    case 408: return "Request Time-out";
-    case 409: return "Conflict";
-    case 410: return "Gone";
-    case 411: return "Length Required";
-    case 412: return "Precondition Failed";
-    case 413: return "Request Entity Too Large";
-    case 414: return "Request-URI Too Large";
-    case 415: return "Unsupported Media Type";
-    case 416: return "Requested range not satisfiable";
-    case 417: return "Expectation Failed";
-    case 500: return "Internal Server Error";
-    case 501: return "Not Implemented";
-    case 502: return "Bad Gateway";
-    case 503: return "Service Unavailable";
-    case 504: return "Gateway Time-out";
-    case 505: return "HTTP Version not supported";
-    default:  return "";
+    case 100:
+      return "Continue";
+
+    case 101:
+      return "Switching Protocols";
+
+    case 200:
+      return "OK";
+
+    case 201:
+      return "Created";
+
+    case 202:
+      return "Accepted";
+
+    case 203:
+      return "Non-Authoritative Information";
+
+    case 204:
+      return "No Content";
+
+    case 205:
+      return "Reset Content";
+
+    case 206:
+      return "Partial Content";
+
+    case 300:
+      return "Multiple Choices";
+
+    case 301:
+      return "Moved Permanently";
+
+    case 302:
+      return "Found";
+
+    case 303:
+      return "See Other";
+
+    case 304:
+      return "Not Modified";
+
+    case 305:
+      return "Use Proxy";
+
+    case 307:
+      return "Temporary Redirect";
+
+    case 400:
+      return "Bad Request";
+
+    case 401:
+      return "Unauthorized";
+
+    case 402:
+      return "Payment Required";
+
+    case 403:
+      return "Forbidden";
+
+    case 404:
+      return "Not Found";
+
+    case 405:
+      return "Method Not Allowed";
+
+    case 406:
+      return "Not Acceptable";
+
+    case 407:
+      return "Proxy Authentication Required";
+
+    case 408:
+      return "Request Time-out";
+
+    case 409:
+      return "Conflict";
+
+    case 410:
+      return "Gone";
+
+    case 411:
+      return "Length Required";
+
+    case 412:
+      return "Precondition Failed";
+
+    case 413:
+      return "Request Entity Too Large";
+
+    case 414:
+      return "Request-URI Too Large";
+
+    case 415:
+      return "Unsupported Media Type";
+
+    case 416:
+      return "Requested range not satisfiable";
+
+    case 417:
+      return "Expectation Failed";
+
+    case 500:
+      return "Internal Server Error";
+
+    case 501:
+      return "Not Implemented";
+
+    case 502:
+      return "Bad Gateway";
+
+    case 503:
+      return "Service Unavailable";
+
+    case 504:
+      return "Gateway Time-out";
+
+    case 505:
+      return "HTTP Version not supported";
+
+    default:
+      return "";
   }
 }
 
@@ -259,7 +341,8 @@ size_t AsyncWebServerResponse::_ack(AsyncWebServerRequest *request, size_t len, 
    Fake Progmem Response
  * */
 
-AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, const uint8_t * content, size_t len, AwsTemplateProcessor callback): AsyncAbstractResponse(callback)
+AsyncProgmemResponse::AsyncProgmemResponse(int code, const String& contentType, const uint8_t * content, size_t len,
+                                           AwsTemplateProcessor callback): AsyncAbstractResponse(callback)
 {
   _code          = code;
   _content       = content;
@@ -384,7 +467,8 @@ void AsyncBasicResponse::_respond(AsyncWebServerRequest *request)
 
     if (_contentCstr)
     {
-      _content = String(_contentCstr);    // short _contentCstr - so just send as Arduino String - not much of a penalty - fall into below
+      _content = String(
+                   _contentCstr);    // short _contentCstr - so just send as Arduino String - not much of a penalty - fall into below
     }
 
     out += _content;
@@ -588,7 +672,8 @@ size_t AsyncBasicResponse::_ack(AsyncWebServerRequest *request, size_t len, uint
     }
   }
 
-  AWS_LOGDEBUG3("AsyncBasicResponse::_ack : Post_ack, _contentLength =", _contentLength, ", _contentCstr =", _contentCstr);
+  AWS_LOGDEBUG3("AsyncBasicResponse::_ack : Post_ack, _contentLength =", _contentLength, ", _contentCstr =",
+                _contentCstr);
 
   return 0;
 }
@@ -713,9 +798,9 @@ size_t AsyncAbstractResponse::_ack(AsyncWebServerRequest *request, size_t len, u
 
       buf[outLen++] = '\r';
       buf[outLen++] = '\n';
-      
+
       outLen += readLen;
-      
+
       buf[outLen++] = '\r';
       buf[outLen++] = '\n';
     }
@@ -743,7 +828,8 @@ size_t AsyncAbstractResponse::_ack(AsyncWebServerRequest *request, size_t len, u
       _writtenLength += request->client()->write((const char*)buf, outLen);
     }
 
-    if (_chunked) {
+    if (_chunked)
+    {
       _sentLength += readLen;
     }
     else
@@ -809,10 +895,12 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
   // Search for template placeholders
   uint8_t* pTemplateStart = data;
 
-  while ((pTemplateStart < &data[len]) && (pTemplateStart = (uint8_t*) memchr(pTemplateStart, TEMPLATE_PLACEHOLDER, &data[len - 1] - pTemplateStart + 1)))
+  while ((pTemplateStart < &data[len])
+         && (pTemplateStart = (uint8_t*) memchr(pTemplateStart, TEMPLATE_PLACEHOLDER, &data[len - 1] - pTemplateStart + 1)))
   {
     // data[0] ... data[len - 1]
-    uint8_t* pTemplateEnd = (pTemplateStart < &data[len - 1]) ? (uint8_t*) memchr(pTemplateStart + 1, TEMPLATE_PLACEHOLDER, &data[len - 1] - pTemplateStart) : nullptr;
+    uint8_t* pTemplateEnd = (pTemplateStart < &data[len - 1]) ? (uint8_t*) memchr(pTemplateStart + 1, TEMPLATE_PLACEHOLDER,
+                                                                                  &data[len - 1] - pTemplateStart) : nullptr;
 
     // temporary buffer to hold parameter name
     uint8_t buf[TEMPLATE_PARAM_NAME_LENGTH + 1];
@@ -844,7 +932,7 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
       // closing placeholder not found, check if it's in the remaining file data
       memcpy(buf, pTemplateStart + 1, &data[len - 1] - pTemplateStart);
       const size_t readFromCacheOrContent = _readDataFromCacheOrContent(buf + (&data[len - 1] - pTemplateStart),
-                                            TEMPLATE_PARAM_NAME_LENGTH + 2 - (&data[len - 1] - pTemplateStart + 1));
+                                                                        TEMPLATE_PARAM_NAME_LENGTH + 2 - (&data[len - 1] - pTemplateStart + 1));
 
       if (readFromCacheOrContent)
       {
@@ -887,7 +975,8 @@ size_t AsyncAbstractResponse::_fillBufferAndProcessTemplates(uint8_t* data, size
       // make room for param value
 
       // 1. move extra data to cache if parameter value is longer than placeholder AND if there is no room to store
-      if ((pTemplateEnd + 1 < pTemplateStart + numBytesCopied) && (originalLen - (pTemplateStart + numBytesCopied - pTemplateEnd - 1) < len))
+      if ((pTemplateEnd + 1 < pTemplateStart + numBytesCopied)
+          && (originalLen - (pTemplateStart + numBytesCopied - pTemplateEnd - 1) < len))
       {
         _cache.insert(_cache.begin(), &data[originalLen - (pTemplateStart + numBytesCopied - pTemplateEnd - 1)], &data[len]);
 
@@ -947,25 +1036,44 @@ AsyncFileResponse::~AsyncFileResponse()
 
 void AsyncFileResponse::_setContentType(const String& path)
 {
-  if      (path.endsWith(".html"))   _contentType = "text/html";
-  else if (path.endsWith(".htm"))   _contentType = "text/html";
-  else if (path.endsWith(".css"))   _contentType = "text/css";
-  else if (path.endsWith(".json"))  _contentType = "application/json";
-  else if (path.endsWith(".js"))    _contentType = "application/javascript";
-  else if (path.endsWith(".png"))   _contentType = "image/png";
-  else if (path.endsWith(".gif"))   _contentType = "image/gif";
-  else if (path.endsWith(".jpg"))   _contentType = "image/jpeg";
-  else if (path.endsWith(".ico"))   _contentType = "image/x-icon";
-  else if (path.endsWith(".svg"))   _contentType = "image/svg+xml";
-  else if (path.endsWith(".eot"))   _contentType = "font/eot";
-  else if (path.endsWith(".woff"))  _contentType = "font/woff";
-  else if (path.endsWith(".woff2")) _contentType = "font/woff2";
-  else if (path.endsWith(".ttf"))   _contentType = "font/ttf";
-  else if (path.endsWith(".xml"))   _contentType = "text/xml";
-  else if (path.endsWith(".pdf"))   _contentType = "application/pdf";
-  else if (path.endsWith(".zip"))   _contentType = "application/zip";
-  else if (path.endsWith(".gz"))     _contentType = "application/x-gzip";
-  else                              _contentType = "text/plain";
+  if      (path.endsWith(".html"))
+    _contentType = "text/html";
+  else if (path.endsWith(".htm"))
+    _contentType = "text/html";
+  else if (path.endsWith(".css"))
+    _contentType = "text/css";
+  else if (path.endsWith(".json"))
+    _contentType = "application/json";
+  else if (path.endsWith(".js"))
+    _contentType = "application/javascript";
+  else if (path.endsWith(".png"))
+    _contentType = "image/png";
+  else if (path.endsWith(".gif"))
+    _contentType = "image/gif";
+  else if (path.endsWith(".jpg"))
+    _contentType = "image/jpeg";
+  else if (path.endsWith(".ico"))
+    _contentType = "image/x-icon";
+  else if (path.endsWith(".svg"))
+    _contentType = "image/svg+xml";
+  else if (path.endsWith(".eot"))
+    _contentType = "font/eot";
+  else if (path.endsWith(".woff"))
+    _contentType = "font/woff";
+  else if (path.endsWith(".woff2"))
+    _contentType = "font/woff2";
+  else if (path.endsWith(".ttf"))
+    _contentType = "font/ttf";
+  else if (path.endsWith(".xml"))
+    _contentType = "text/xml";
+  else if (path.endsWith(".pdf"))
+    _contentType = "application/pdf";
+  else if (path.endsWith(".zip"))
+    _contentType = "application/zip";
+  else if (path.endsWith(".gz"))
+    _contentType = "application/x-gzip";
+  else
+    _contentType = "text/plain";
 }
 
 /////////////////////////////////////////////////
@@ -1063,7 +1171,8 @@ size_t AsyncFileResponse::_fillBuffer(uint8_t *data, size_t len)
    Stream Response
  * */
 
-AsyncStreamResponse::AsyncStreamResponse(Stream &stream, const String& contentType, size_t len, AwsTemplateProcessor callback): AsyncAbstractResponse(callback)
+AsyncStreamResponse::AsyncStreamResponse(Stream &stream, const String& contentType, size_t len,
+                                         AwsTemplateProcessor callback): AsyncAbstractResponse(callback)
 {
   _code = 200;
   _content = &stream;
@@ -1092,7 +1201,8 @@ size_t AsyncStreamResponse::_fillBuffer(uint8_t *data, size_t len)
    Callback Response
  * */
 
-AsyncCallbackResponse::AsyncCallbackResponse(const String& contentType, size_t len, AwsResponseFiller callback, AwsTemplateProcessor templateCallback)
+AsyncCallbackResponse::AsyncCallbackResponse(const String& contentType, size_t len, AwsResponseFiller callback,
+                                             AwsTemplateProcessor templateCallback)
   : AsyncAbstractResponse(templateCallback)
 {
   _code = 200;
@@ -1127,7 +1237,8 @@ size_t AsyncCallbackResponse::_fillBuffer(uint8_t *data, size_t len)
    Chunked Response
  * */
 
-AsyncChunkedResponse::AsyncChunkedResponse(const String& contentType, AwsResponseFiller callback, AwsTemplateProcessor processorCallback): AsyncAbstractResponse(processorCallback)
+AsyncChunkedResponse::AsyncChunkedResponse(const String& contentType, AwsResponseFiller callback,
+                                           AwsTemplateProcessor processorCallback): AsyncAbstractResponse(processorCallback)
 {
   _code = 200;
   _content = callback;

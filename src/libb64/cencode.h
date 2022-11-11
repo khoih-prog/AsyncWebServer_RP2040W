@@ -5,9 +5,9 @@
   For details, see http://sourceforge.net/projects/libb64
 
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
@@ -26,12 +26,12 @@
 extern "C" {
 #endif
 
-typedef enum 
+typedef enum
 {
   step_A, step_B, step_C
 } base64_encodestep;
 
-typedef struct 
+typedef struct
 {
   base64_encodestep step;
   char result;

@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   AsyncWebServer_RP2040W.h
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
- 
-  Version: 1.4.0
-  
+
+  Version: 1.4.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
@@ -24,8 +24,9 @@
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
+  1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
- 
+
 #ifndef _RP2040W_ASYNC_WEBSERVER_H_
 #define _RP2040W_ASYNC_WEBSERVER_H_
 
@@ -39,13 +40,13 @@
 
 /////////////////////////////////////////////////
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.4.0"
+#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.4.1"
 
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MAJOR     1
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MINOR     4
-#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     0
+#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     1
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1004000
+#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1004001
 
 /////////////////////////////////////////////////
 
@@ -90,17 +91,17 @@ class AsyncResponseStream;
 /////////////////////////////////////////////////
 
 #ifndef WEBSERVER_H
-  typedef enum
-  {
-    HTTP_GET     = 0b00000001,
-    HTTP_POST    = 0b00000010,
-    HTTP_DELETE  = 0b00000100,
-    HTTP_PUT     = 0b00001000,
-    HTTP_PATCH   = 0b00010000,
-    HTTP_HEAD    = 0b00100000,
-    HTTP_OPTIONS = 0b01000000,
-    HTTP_ANY     = 0b01111111,
-  } WebRequestMethod;
+typedef enum
+{
+  HTTP_GET     = 0b00000001,
+  HTTP_POST    = 0b00000010,
+  HTTP_DELETE  = 0b00000100,
+  HTTP_PUT     = 0b00001000,
+  HTTP_PATCH   = 0b00010000,
+  HTTP_HEAD    = 0b00100000,
+  HTTP_OPTIONS = 0b01000000,
+  HTTP_ANY     = 0b01111111,
+} WebRequestMethod;
 #endif
 
 //if this value is returned when asked for data, packet will not be sent and you will be asked for data again
@@ -439,28 +440,38 @@ class AsyncWebServerRequest
                                           AwsTemplateProcessor callback = nullptr);
     //////
 
-    void send(FS &fs, const String& path, const String& contentType = String(), bool download = false, 
+    void send(FS &fs, const String& path, const String& contentType = String(), bool download = false,
               AwsTemplateProcessor callback = nullptr);
-    void send(File content, const String& path, const String& contentType = String(), bool download = false, 
+    void send(File content, const String& path, const String& contentType = String(), bool download = false,
               AwsTemplateProcessor callback = nullptr);
-              
+
     void send(Stream &stream, const String& contentType, size_t len, AwsTemplateProcessor callback = nullptr);
-    void send(const String& contentType, size_t len, AwsResponseFiller callback, AwsTemplateProcessor templateCallback = nullptr);
-    void sendChunked(const String& contentType, AwsResponseFiller callback, AwsTemplateProcessor templateCallback = nullptr);
-    void send_P(int code, const String& contentType, const uint8_t * content, size_t len, AwsTemplateProcessor callback = nullptr);
+    void send(const String& contentType, size_t len, AwsResponseFiller callback,
+              AwsTemplateProcessor templateCallback = nullptr);
+    void sendChunked(const String& contentType, AwsResponseFiller callback,
+                     AwsTemplateProcessor templateCallback = nullptr);
+    void send_P(int code, const String& contentType, const uint8_t * content, size_t len,
+                AwsTemplateProcessor callback = nullptr);
     void send_P(int code, const String& contentType, PGM_P content, AwsTemplateProcessor callback = nullptr);
 
     AsyncWebServerResponse *beginResponse(int code, const String& contentType = String(), const String& content = String());
-    AsyncWebServerResponse *beginResponse(FS &fs, const String& path, const String& contentType = String(), bool download = false, 
-                                         AwsTemplateProcessor callback = nullptr);
-    AsyncWebServerResponse *beginResponse(File content, const String& path, const String& contentType = String(), bool download = false, 
+    AsyncWebServerResponse *beginResponse(FS &fs, const String& path, const String& contentType = String(),
+                                          bool download = false,
                                           AwsTemplateProcessor callback = nullptr);
-    AsyncWebServerResponse *beginResponse(Stream &stream, const String& contentType, size_t len, AwsTemplateProcessor callback = nullptr);
-    AsyncWebServerResponse *beginResponse(const String& contentType, size_t len, AwsResponseFiller callback, AwsTemplateProcessor templateCallback = nullptr);
-    AsyncWebServerResponse *beginChunkedResponse(const String& contentType, AwsResponseFiller callback, AwsTemplateProcessor templateCallback = nullptr);
+    AsyncWebServerResponse *beginResponse(File content, const String& path, const String& contentType = String(),
+                                          bool download = false,
+                                          AwsTemplateProcessor callback = nullptr);
+    AsyncWebServerResponse *beginResponse(Stream &stream, const String& contentType, size_t len,
+                                          AwsTemplateProcessor callback = nullptr);
+    AsyncWebServerResponse *beginResponse(const String& contentType, size_t len, AwsResponseFiller callback,
+                                          AwsTemplateProcessor templateCallback = nullptr);
+    AsyncWebServerResponse *beginChunkedResponse(const String& contentType, AwsResponseFiller callback,
+                                                 AwsTemplateProcessor templateCallback = nullptr);
     AsyncResponseStream    *beginResponseStream(const String& contentType, size_t bufferSize = 1460);
-    AsyncWebServerResponse *beginResponse_P(int code, const String& contentType, const uint8_t * content, size_t len, AwsTemplateProcessor callback = nullptr);
-    AsyncWebServerResponse *beginResponse_P(int code, const String& contentType, PGM_P content, AwsTemplateProcessor callback = nullptr);
+    AsyncWebServerResponse *beginResponse_P(int code, const String& contentType, const uint8_t * content, size_t len,
+                                            AwsTemplateProcessor callback = nullptr);
+    AsyncWebServerResponse *beginResponse_P(int code, const String& contentType, PGM_P content,
+                                            AwsTemplateProcessor callback = nullptr);
 
     size_t headers() const;                     // get header count
     bool hasHeader(const String& name) const;   // check if header exists
@@ -553,7 +564,7 @@ class AsyncWebRewrite
     inline AsyncWebRewrite& setFilter(ArRequestFilterFunction fn)
     {
       _filter = fn;
-      
+
       return *this;
     }
 
@@ -614,7 +625,7 @@ class AsyncWebHandler
     inline AsyncWebHandler& setFilter(ArRequestFilterFunction fn)
     {
       _filter = fn;
-      
+
       return *this;
     }
 
@@ -649,7 +660,8 @@ class AsyncWebHandler
     /////////////////////////////////////////////////
 
     virtual void handleRequest(AsyncWebServerRequest *request __attribute__((unused))) {}
-    virtual void handleUpload(AsyncWebServerRequest *request  __attribute__((unused)), const String& filename __attribute__((unused)),
+    virtual void handleUpload(AsyncWebServerRequest *request  __attribute__((unused)),
+                              const String& filename __attribute__((unused)),
                               size_t index __attribute__((unused)), uint8_t *data __attribute__((unused)), size_t len __attribute__((unused)),
                               bool final  __attribute__((unused))) {}
     virtual void handleBody(AsyncWebServerRequest *request __attribute__((unused)), uint8_t *data __attribute__((unused)),
@@ -713,8 +725,10 @@ class AsyncWebServerResponse
  * */
 
 typedef std::function<void(AsyncWebServerRequest *request)> ArRequestHandlerFunction;
-typedef std::function<void(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final)> ArUploadHandlerFunction;
-typedef std::function<void(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)> ArBodyHandlerFunction;
+typedef std::function<void(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final)>
+ArUploadHandlerFunction;
+typedef std::function<void(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)>
+ArBodyHandlerFunction;
 
 /////////////////////////////////////////////////
 
@@ -761,7 +775,8 @@ class AsyncWebServer
 
     void onFileUpload(ArUploadHandlerFunction fn); //handle file uploads
 
-    void onRequestBody(ArBodyHandlerFunction fn); //handle posts with plain body content (JSON often transmitted this way as a request)
+    void onRequestBody(ArBodyHandlerFunction
+                       fn); //handle posts with plain body content (JSON often transmitted this way as a request)
 
     void reset(); //remove all writers and handlers, with onNotFound/onFileUpload/onRequestBody
 

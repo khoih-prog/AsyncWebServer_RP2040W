@@ -1,8 +1,8 @@
 {
   "name": "AsyncWebServer_RP2040W",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "keywords": "http, async, websocket, webserver, async-webserver, async-tcp, async-udp, async-websocket, async-http, ssl, tls, rp2040, rp2040w, raspberry-pi-pico-w, cyw43439, wifi",
-  "description": "Asynchronous WebServer Library for RASPBERRY_PI_PICO_W using CYW43439 WiFi with arduino-pico core. This library, which is relied on AsyncTCP_RP2040W, is part of a series of advanced Async libraries for RP2040W, such as AsyncTCP_RP2040W, AsyncUDP_RP2040W, AsyncWebServer_RP2040W, AsyncHTTPRequest_RP2040W, AsyncHTTPSRequest_RP2040W, etc. Now can display programmed WiFi country-code and support using CString to save heap to send very large data",
+  "description": "Asynchronous WebServer Library for RASPBERRY_PI_PICO_W using CYW43439 WiFi with arduino-pico core. This library, which is relied on AsyncTCP_RP2040W, is part of a series of advanced Async libraries for RP2040W, such as AsyncTCP_RP2040W, AsyncUDP_RP2040W, AsyncWebServer_RP2040W, AsyncHTTPRequest_RP2040W, AsyncHTTPSRequest_RP2040W, etc. Now can display programmed WiFi country-code, support using CString to save heap to send very large data and examples to demo how to use beginChunkedResponse() to send large html in chunks",
   "authors": 
   [
     {

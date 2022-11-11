@@ -5,9 +5,9 @@
   For details, see http://sourceforge.net/projects/libb64
 
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
@@ -60,8 +60,8 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
         result = (fragment & 0x0fc) >> 2;
         *codechar++ = base64_encode_value(result);
         result = (fragment & 0x003) << 4;
-        
-        // fall through
+
+      // fall through
 
       case step_B:
         if (plainchar == plaintextend)
@@ -75,9 +75,9 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
         result |= (fragment & 0x0f0) >> 4;
         *codechar++ = base64_encode_value(result);
         result = (fragment & 0x00f) << 2;
-        
-        // fall through
-        
+
+      // fall through
+
       case step_C:
         if (plainchar == plaintextend)
         {
@@ -99,7 +99,7 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
           *codechar++ = '\n';
           state_in->stepcount = 0;
         }
-        
+
         // fall through
       }
   }
@@ -119,10 +119,12 @@ int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
       *codechar++ = '=';
       *codechar++ = '=';
       break;
+
     case step_C:
       *codechar++ = base64_encode_value(state_in->result);
       *codechar++ = '=';
       break;
+
     case step_A:
       break;
   }

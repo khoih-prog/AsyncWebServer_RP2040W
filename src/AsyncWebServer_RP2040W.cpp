@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   AsyncWebServer_RP2040W.cpp
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
- 
-  Version: 1.4.0
-  
+
+  Version: 1.4.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
@@ -24,6 +24,7 @@
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
+  1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -63,7 +64,7 @@ AsyncWebServer::AsyncWebServer(uint16_t port)
     //c->setRxTimeout(3);
     c->setRxTimeout(0);
     //////
-    
+
     AsyncWebServerRequest *r = new AsyncWebServerRequest((AsyncWebServer*)s, c);
 
     if (r == NULL)
@@ -114,7 +115,7 @@ AsyncWebRewrite& AsyncWebServer::rewrite(const char* from, const char* to)
 AsyncWebHandler& AsyncWebServer::addHandler(AsyncWebHandler* handler)
 {
   _handlers.add(handler);
-  
+
   return *handler;
 }
 
@@ -159,7 +160,7 @@ void AsyncWebServer::beginSecure(const char *cert, const char *key, const char *
 /////////////////////////////////////////////////
 
 void AsyncWebServer::_handleDisconnect(AsyncWebServerRequest *request)
-{ 
+{
   delete request;
 }
 
@@ -186,19 +187,20 @@ void AsyncWebServer::_attachHandler(AsyncWebServerRequest *request)
     if (h->filter(request) && h->canHandle(request))
     {
       request->setHandler(h);
-      
+
       return;
     }
   }
 
   request->addInterestingHeader("ANY");
-  
+
   request->setHandler(NULL);
 }
 
 /////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest,
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method,
+                                            ArRequestHandlerFunction onRequest,
                                             ArUploadHandlerFunction onUpload, ArBodyHandlerFunction onBody)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
@@ -215,7 +217,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
 
 /////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest, 
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method,
+                                            ArRequestHandlerFunction onRequest,
                                             ArUploadHandlerFunction onUpload)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
@@ -230,7 +233,8 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodCom
 
 /////////////////////////////////////////////////
 
-AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest)
+AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, WebRequestMethodComposite method,
+                                            ArRequestHandlerFunction onRequest)
 {
   AsyncCallbackWebHandler* handler = new AsyncCallbackWebHandler();
   handler->setUri(uri);
@@ -256,12 +260,12 @@ AsyncCallbackWebHandler& AsyncWebServer::on(const char* uri, ArRequestHandlerFun
 /////////////////////////////////////////////////
 
 // KH Test add serveStatic
-AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, fs::FS& fs, const char* path, 
+AsyncStaticWebHandler& AsyncWebServer::serveStatic(const char* uri, fs::FS& fs, const char* path,
                                                    const char* cache_control)
 {
   AsyncStaticWebHandler* handler = new AsyncStaticWebHandler(uri, fs, path, cache_control);
   addHandler(handler);
-  
+
   return *handler;
 }
 //////

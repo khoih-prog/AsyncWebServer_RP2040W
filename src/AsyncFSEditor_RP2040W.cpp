@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   AsyncFSEditor_RP2040W.cpp
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
- 
-  Version: 1.4.0
-  
+
+  Version: 1.4.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
@@ -24,6 +24,7 @@
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
+  1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
 
 #include "AsyncFSEditor_RP2040W.h"
@@ -328,25 +329,30 @@ static bool matchWild(const char *pattern, const char *testee)
   {
     if (( *pattern == '?' ) || (*pattern == *testee))
     {
-      pattern++; testee++;
+      pattern++;
+      testee++;
       continue;
     }
 
     if (*pattern == '*')
     {
-      nxPat = pattern++; nxTst = testee;
+      nxPat = pattern++;
+      nxTst = testee;
       continue;
     }
 
     if (nxPat)
     {
-      pattern = nxPat + 1; testee = ++nxTst;
+      pattern = nxPat + 1;
+      testee = ++nxTst;
       continue;
     }
 
     return false;
   }
-  while (*pattern == '*') {
+
+  while (*pattern == '*')
+  {
     pattern++;
   }
 
@@ -376,7 +382,7 @@ static bool addExclude(const char *item)
   if (!e->item)
   {
     free(e);
-    
+
     return false;
   }
 
@@ -395,7 +401,8 @@ static void loadExcludeList(FS& fs, const char *filename)
 
   if (&fs)
   {
-    AWS_LOGDEBUG0("loadExcludeList: FS * = "); AWS_LOGDEBUG0( ( (uint32_t) &fs, HEX ) );
+    AWS_LOGDEBUG0("loadExcludeList: FS * = ");
+    AWS_LOGDEBUG0( ( (uint32_t) &fs, HEX ) );
   }
   else
   {
@@ -451,7 +458,7 @@ static void loadExcludeList(FS& fs, const char *filename)
       if (!addExclude(linebuf))
       {
         excludeFile.close();
-        
+
         return;
       }
     }
@@ -466,7 +473,8 @@ static bool isExcluded(FS& fs, const char *filename)
 {
   if (&fs)
   {
-    AWS_LOGDEBUG0("isExcluded: FS * = "); AWS_LOGDEBUG0( ( (uint32_t) &fs, HEX ) );
+    AWS_LOGDEBUG0("isExcluded: FS * = ");
+    AWS_LOGDEBUG0( ( (uint32_t) &fs, HEX ) );
   }
   else
   {
@@ -506,7 +514,8 @@ AsyncFSEditor::AsyncFSEditor(const String& username, const String& password, con
 {
   if (&fs)
   {
-    AWS_LOGDEBUG0("AsyncFSEditor: FS * = "); AWS_LOGDEBUG0( ( (uint32_t) &fs, HEX ) );
+    AWS_LOGDEBUG0("AsyncFSEditor: FS * = ");
+    AWS_LOGDEBUG0( ( (uint32_t) &fs, HEX ) );
   }
   else
   {
@@ -537,7 +546,7 @@ bool AsyncFSEditor::canHandle(AsyncWebServerRequest *request)
         if (request->_tempFile.isDirectory())
         {
           request->_tempFile.close();
-          
+
           return false;
         }
       }
@@ -554,7 +563,7 @@ bool AsyncFSEditor::canHandle(AsyncWebServerRequest *request)
         if (request->_tempFile.isDirectory())
         {
           request->_tempFile.close();
-          
+
           return false;
         }
       }

@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   AsyncWebSocket_RP2040W.cpp
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
- 
-  Version: 1.4.0
-  
+
+  Version: 1.4.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
@@ -24,6 +24,7 @@
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
+  1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
 
 #include "Arduino.h"
@@ -127,7 +128,7 @@ size_t webSocketSendFrame(AsyncClient *client, bool final, uint8_t opcode, bool 
     AWS_LOGDEBUG1("Error adding header, bytes =", headLen);
 
     free(buf);
-    
+
     return 0;
   }
 
@@ -154,7 +155,7 @@ size_t webSocketSendFrame(AsyncClient *client, bool final, uint8_t opcode, bool 
   if (!client->send())
   {
     AWS_LOGDEBUG1("Error sending frame: bytes =", headLen + len);
-    
+
     return 0;
   }
 
@@ -300,7 +301,7 @@ class AsyncWebSocketControl
   public:
 
     /////////////////////////////////////////////////
-  
+
     AsyncWebSocketControl(uint8_t opcode, uint8_t *data = NULL, size_t len = 0, bool mask = false)
       : _opcode(opcode), _len(len), _mask(len && mask), _finished(false)
     {
@@ -357,7 +358,7 @@ class AsyncWebSocketControl
     size_t send(AsyncClient *client)
     {
       _finished = true;
-      
+
       return webSocketSendFrame(client, true, _opcode & 0x0F, _mask, _data, _len);
     }
 };
@@ -489,7 +490,7 @@ AsyncWebSocketMultiMessage::AsyncWebSocketMultiMessage(AsyncWebSocketMessageBuff
   {
     _WSbuffer = buffer;
     (*_WSbuffer)++;
-    
+
     _data   = buffer->get();
     _len    = buffer->length();
     _status = WS_MSG_SENDING;
@@ -543,14 +544,14 @@ size_t AsyncWebSocketMultiMessage::send(AsyncClient *client)
   if (_sent == _len)
   {
     _status = WS_MSG_SENT;
-    
+
     return 0;
   }
 
   if (_sent > _len)
   {
     _status = WS_MSG_ERROR;
-    
+
     AWS_LOGDEBUG3("WS_MSG_ERROR: _sent =", _sent, ", _len =", _len);
 
     return 0;
@@ -582,6 +583,7 @@ size_t AsyncWebSocketMultiMessage::send(AsyncClient *client)
     _sent -= (toSend - sent);
     _ack  -= (toSend - sent);
   }
+
   AWS_LOGDEBUG3("Send OK: _sent = ", _sent, "= sent =", sent);
 
   return sent;
@@ -603,7 +605,7 @@ AsyncWebSocketClient::AsyncWebSocketClient(AsyncWebServerRequest *request, Async
 {
   delete  c;
 }))
-, _messageQueue(LinkedList<AsyncWebSocketMessage *>([](AsyncWebSocketMessage *m) 
+, _messageQueue(LinkedList<AsyncWebSocketMessage *>([](AsyncWebSocketMessage *m)
 {
   delete  m;
 }))
@@ -616,7 +618,7 @@ AsyncWebSocketClient::AsyncWebSocketClient(AsyncWebServerRequest *request, Async
   _pstate = 0;
   _lastMessageTime = millis();
   _keepAlivePeriod = 0;
-  
+
   _client->setRxTimeout(0);
 
   _client->onError([](void *r, AsyncClient * c, int8_t error)
@@ -692,6 +694,7 @@ void AsyncWebSocketClient::_onAck(size_t len, uint32_t time)
 
         return;
       }
+
       _controlQueue.remove(head);
     }
   }
@@ -709,10 +712,12 @@ void AsyncWebSocketClient::_onAck(size_t len, uint32_t time)
 
 void AsyncWebSocketClient::_onPoll()
 {
-  if (_client->canSend() && (!_controlQueue.isEmpty() || !_messageQueue.isEmpty())) {
+  if (_client->canSend() && (!_controlQueue.isEmpty() || !_messageQueue.isEmpty()))
+  {
     _runQueue();
   }
-  else if (_keepAlivePeriod > 0 && _controlQueue.isEmpty() && _messageQueue.isEmpty() && (millis() - _lastMessageTime) >= _keepAlivePeriod)
+  else if (_keepAlivePeriod > 0 && _controlQueue.isEmpty() && _messageQueue.isEmpty()
+           && (millis() - _lastMessageTime) >= _keepAlivePeriod)
   {
     ping((uint8_t *)AWSC_PING_PAYLOAD, AWSC_PING_PAYLOAD_LEN);
   }
@@ -758,7 +763,7 @@ void AsyncWebSocketClient::_queueMessage(AsyncWebSocketMessage *dataMessage)
   if (_status != WS_CONNECTED)
   {
     delete dataMessage;
-    
+
     return;
   }
 
@@ -766,10 +771,10 @@ void AsyncWebSocketClient::_queueMessage(AsyncWebSocketMessage *dataMessage)
   {
     AWS_LOGERROR("ERROR: Large MsQ");
     delete dataMessage;
-    
+
     // KH, fix _messageQueue overflowed by discarding all in the queue
     _messageQueue.free();
-       
+
     delay(20);
     //////
   }
@@ -878,28 +883,28 @@ void AsyncWebSocketClient::_onData(void *pbuf, size_t plen)
     if (!_pstate)
     {
       const uint8_t *fdata = data;
-      
+
       _pinfo.index = 0;
       _pinfo.final = (fdata[0] & 0x80) != 0;
       _pinfo.opcode = fdata[0] & 0x0F;
       _pinfo.masked = (fdata[1] & 0x80) != 0;
       _pinfo.len = fdata[1] & 0x7F;
-      
+
       data += 2;
       plen -= 2;
 
       if (_pinfo.len == 126)
       {
         _pinfo.len = fdata[3] | (uint16_t)(fdata[2]) << 8;
-        
+
         data += 2;
         plen -= 2;
       }
-      else if (_pinfo.len == 127) 
+      else if (_pinfo.len == 127)
       {
         _pinfo.len = fdata[9] | (uint16_t)(fdata[8]) << 8 | (uint32_t)(fdata[7]) << 16 | (uint32_t)(fdata[6]) << 24
                      | (uint64_t)(fdata[5]) << 32 | (uint64_t)(fdata[4]) << 40 | (uint64_t)(fdata[3]) << 48 | (uint64_t)(fdata[2]) << 56;
-                     
+
         data += 8;
         plen -= 8;
       }
@@ -907,7 +912,7 @@ void AsyncWebSocketClient::_onData(void *pbuf, size_t plen)
       if (_pinfo.masked)
       {
         memcpy(_pinfo.mask, data, 4);
-        
+
         data += 4;
         plen -= 4;
       }
@@ -928,7 +933,7 @@ void AsyncWebSocketClient::_onData(void *pbuf, size_t plen)
 
       if (_pinfo.index == 0)
       {
-        if (_pinfo.opcode) 
+        if (_pinfo.opcode)
         {
           _pinfo.message_opcode = _pinfo.opcode;
           _pinfo.num = 0;
@@ -979,8 +984,9 @@ void AsyncWebSocketClient::_onData(void *pbuf, size_t plen)
         if (datalen != AWSC_PING_PAYLOAD_LEN || memcmp(AWSC_PING_PAYLOAD, data, AWSC_PING_PAYLOAD_LEN) != 0)
           _server->_handleEvent(this, WS_EVT_PONG, NULL, data, datalen);
       }
-      else if (_pinfo.opcode < 8) 
-      { //continuation or text/binary frame
+      else if (_pinfo.opcode < 8)
+      {
+        //continuation or text/binary frame
         _server->_handleEvent(this, WS_EVT_DATA, (void *)&_pinfo, data, datalen);
       }
     }
@@ -1013,7 +1019,7 @@ size_t AsyncWebSocketClient::printf(const char *format, ...)
   if (!temp)
   {
     va_end(arg);
-    
+
     return 0;
   }
 
@@ -1028,7 +1034,7 @@ size_t AsyncWebSocketClient::printf(const char *format, ...)
     if (!buffer)
     {
       delete[] temp;
-      
+
       return 0;
     }
 
@@ -1045,7 +1051,7 @@ size_t AsyncWebSocketClient::printf(const char *format, ...)
   }
 
   delete[] temp;
-  
+
   return len;
 }
 
@@ -1184,7 +1190,8 @@ AsyncWebSocket::~AsyncWebSocket() {}
 
 /////////////////////////////////////////////////
 
-void AsyncWebSocket::_handleEvent(AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)
+void AsyncWebSocket::_handleEvent(AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data,
+                                  size_t len)
 {
   if (_eventHandler != NULL)
   {
@@ -1423,7 +1430,7 @@ size_t AsyncWebSocket::printf(uint32_t id, const char *format, ...)
     va_start(arg, format);
     size_t len = c->printf(format, arg);
     va_end(arg);
-    
+
     return len;
   }
 
@@ -1459,7 +1466,7 @@ size_t AsyncWebSocket::printfAll(const char *format, ...)
   va_end(arg);
 
   textAll(buffer);
-  
+
   return len;
 }
 
@@ -1617,7 +1624,7 @@ void AsyncWebSocket::handleRequest(AsyncWebServerRequest * request)
     return;
   }
 
-  if ((_username != "" && _password != "") && !request->authenticate(_username.c_str(), _password.c_str())) 
+  if ((_username != "" && _password != "") && !request->authenticate(_username.c_str(), _password.c_str()))
   {
     return request->requestAuthentication();
   }
@@ -1717,7 +1724,7 @@ AsyncWebSocketResponse::AsyncWebSocketResponse(const String & key, AsyncWebSocke
   if (hash == NULL)
   {
     _state = RESPONSE_FAILED;
-    
+
     return;
   }
 
@@ -1759,7 +1766,7 @@ void AsyncWebSocketResponse::_respond(AsyncWebServerRequest * request)
   if (_state == RESPONSE_FAILED)
   {
     request->client()->close(true);
-    
+
     return;
   }
 

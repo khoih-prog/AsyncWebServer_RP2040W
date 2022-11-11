@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   AsyncWebHandlers_RP2040W.cpp
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
- 
-  Version: 1.4.0
-  
+
+  Version: 1.4.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
@@ -24,6 +24,7 @@
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
+  1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
 
 #if !defined(_RP2040W_AWS_LOGLEVEL_)
@@ -38,7 +39,8 @@
 /////////////////////////////////////////////////
 
 AsyncStaticWebHandler::AsyncStaticWebHandler(const char* uri, FS& fs, const char* path, const char* cache_control)
-  : _fs(fs), _uri(uri), _path(path), _default_file("index.htm"), _cache_control(cache_control), _last_modified(""), _callback(nullptr)
+  : _fs(fs), _uri(uri), _path(path), _default_file("index.htm"), _cache_control(cache_control), _last_modified(""),
+    _callback(nullptr)
 {
   // Ensure leading '/'
   if (_uri.length() == 0 || _uri[0] != '/')
@@ -69,7 +71,7 @@ AsyncStaticWebHandler::AsyncStaticWebHandler(const char* uri, FS& fs, const char
 AsyncStaticWebHandler& AsyncStaticWebHandler::setIsDir(bool isDir)
 {
   _isDir = isDir;
-  
+
   return *this;
 }
 
@@ -134,12 +136,13 @@ AsyncStaticWebHandler& AsyncStaticWebHandler::setLastModified()
 
 bool AsyncStaticWebHandler::canHandle(AsyncWebServerRequest *request)
 {
-  if ( request->method() != HTTP_GET || !request->url().startsWith(_uri) || !request->isExpectedRequestedConnType(RCT_DEFAULT, RCT_HTTP) )
+  if ( request->method() != HTTP_GET || !request->url().startsWith(_uri)
+       || !request->isExpectedRequestedConnType(RCT_DEFAULT, RCT_HTTP) )
   {
     return false;
   }
 
-  if (_getFile(request)) 
+  if (_getFile(request))
   {
 
     // We interested in "If-Modified-Since" header to check if file was modified
@@ -274,7 +277,7 @@ void AsyncStaticWebHandler::handleRequest(AsyncWebServerRequest *request)
     {
       request->_tempFile.close();
       AsyncWebServerResponse * response = new AsyncBasicResponse(304); // Not modified
-      
+
       response->addHeader("Cache-Control", _cache_control);
       response->addHeader("ETag", etag);
       request->send(response);

@@ -1,10 +1,10 @@
 /****************************************************************************************************************************
   defines.h
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
@@ -15,7 +15,7 @@
 #define defines_h
 
 #if !( defined(ARDUINO_RASPBERRY_PI_PICO_W) )
-  #error For RASPBERRY_PI_PICO_W only
+	#error For RASPBERRY_PI_PICO_W only
 #endif
 
 #define _RP2040W_AWS_LOGLEVEL_     1

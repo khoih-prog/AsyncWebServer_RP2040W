@@ -11,6 +11,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.4.1](#Release-v141)
   * [Release v1.4.0](#Release-v140)
   * [Release v1.3.1](#Release-v131)
   * [Release v1.3.0](#Release-v130)
@@ -28,6 +29,12 @@
 ---
 
 ## Changelog
+
+#### Release v1.4.1
+
+1. Add examples [Async_AdvancedWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_SendChunked) and [AsyncWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncWebServer_SendChunked) to demo how to use `beginChunkedResponse()` to send large `html` in chunks
+2. Use `allman astyle` and add `utils`
+
 
 #### Release v1.4.0
 

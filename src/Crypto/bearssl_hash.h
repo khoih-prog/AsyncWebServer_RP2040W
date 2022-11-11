@@ -1,26 +1,26 @@
 /*
- * Copyright (c) 2016 Thomas Pornin <pornin@bolet.org>
- *
- * Permission is hereby granted, free of charge, to any person obtaining 
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be 
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+   Copyright (c) 2016 Thomas Pornin <pornin@bolet.org>
+
+   Permission is hereby granted, free of charge, to any person obtaining
+   a copy of this software and associated documentation files (the
+   "Software"), to deal in the Software without restriction, including
+   without limitation the rights to use, copy, modify, merge, publish,
+   distribute, sublicense, and/or sell copies of the Software, and to
+   permit persons to whom the Software is furnished to do so, subject to
+   the following conditions:
+
+   The above copyright notice and this permission notice shall be
+   included in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+*/
 
 #pragma once
 
@@ -224,7 +224,7 @@ extern "C" {
 */
 typedef struct br_hash_class_ br_hash_class;
 
-struct br_hash_class_ 
+struct br_hash_class_
 {
   /**
      \brief Size (in bytes) of the context structure appropriate for
@@ -392,7 +392,7 @@ extern const br_hash_class br_md5_vtable;
    First field is a pointer to the vtable; it is set by the initialisation
    function. Other fields are not supposed to be accessed by user code.
 */
-typedef struct 
+typedef struct
 {
   /**
      \brief Pointer to vtable for this context.
@@ -488,7 +488,7 @@ extern const br_hash_class br_sha1_vtable;
    First field is a pointer to the vtable; it is set by the initialisation
    function. Other fields are not supposed to be accessed by user code.
 */
-typedef struct 
+typedef struct
 {
   /**
      \brief Pointer to vtable for this context.
@@ -584,7 +584,7 @@ extern const br_hash_class br_sha224_vtable;
    First field is a pointer to the vtable; it is set by the initialisation
    function. Other fields are not supposed to be accessed by user code.
 */
-typedef struct 
+typedef struct
 {
   /**
      \brief Pointer to vtable for this context.
@@ -675,22 +675,22 @@ void br_sha224_set_state(br_sha224_context *ctx, const void *stb, uint64_t count
 extern const br_hash_class br_sha256_vtable;
 
 #ifdef BR_DOXYGEN_IGNORE
+/**
+   \brief SHA-256 context.
+
+   First field is a pointer to the vtable; it is set by the initialisation
+   function. Other fields are not supposed to be accessed by user code.
+*/
+typedef struct
+{
   /**
-     \brief SHA-256 context.
-  
-     First field is a pointer to the vtable; it is set by the initialisation
-     function. Other fields are not supposed to be accessed by user code.
+     \brief Pointer to vtable for this context.
   */
-  typedef struct 
-  {
-    /**
-       \brief Pointer to vtable for this context.
-    */
-    const br_hash_class *vtable;
-  } br_sha256_context;
+  const br_hash_class *vtable;
+} br_sha256_context;
 
 #else
-  typedef br_sha224_context br_sha256_context;
+typedef br_sha224_context br_sha256_context;
 #endif
 
 /**
@@ -704,20 +704,20 @@ extern const br_hash_class br_sha256_vtable;
 void br_sha256_init(br_sha256_context *ctx);
 
 #ifdef BR_DOXYGEN_IGNORE
-  /**
-     \brief Inject some data bytes in a running SHA-256 computation.
-  
-     The provided context is updated with some data bytes. If the number
-     of bytes (`len`) is zero, then the data pointer (`data`) is ignored
-     and may be `NULL`, and this function does nothing.
-  
-     \param ctx    pointer to the context structure.
-     \param data   pointer to the injected data.
-     \param len    injected data length (in bytes).
-  */
-  void br_sha256_update(br_sha256_context *ctx, const void *data, size_t len);
+/**
+   \brief Inject some data bytes in a running SHA-256 computation.
+
+   The provided context is updated with some data bytes. If the number
+   of bytes (`len`) is zero, then the data pointer (`data`) is ignored
+   and may be `NULL`, and this function does nothing.
+
+   \param ctx    pointer to the context structure.
+   \param data   pointer to the injected data.
+   \param len    injected data length (in bytes).
+*/
+void br_sha256_update(br_sha256_context *ctx, const void *data, size_t len);
 #else
-  #define br_sha256_update      br_sha224_update
+#define br_sha256_update      br_sha224_update
 #endif
 
 /**
@@ -735,36 +735,36 @@ void br_sha256_init(br_sha256_context *ctx);
 void br_sha256_out(const br_sha256_context *ctx, void *out);
 
 #ifdef BR_DOXYGEN_IGNORE
-  /**
-     \brief Save SHA-256 running state.
-  
-     The running state for SHA-256 (output of the last internal block
-     processing) is written in the buffer pointed to by `out`. The
-     number of bytes injected since the last initialisation or reset
-     call is returned. The context is not modified.
-  
-     \param ctx   pointer to the context structure.
-     \param out   destination buffer for the running state.
-     \return  the injected total byte length.
-  */
-  uint64_t br_sha256_state(const br_sha256_context *ctx, void *out);
+/**
+   \brief Save SHA-256 running state.
+
+   The running state for SHA-256 (output of the last internal block
+   processing) is written in the buffer pointed to by `out`. The
+   number of bytes injected since the last initialisation or reset
+   call is returned. The context is not modified.
+
+   \param ctx   pointer to the context structure.
+   \param out   destination buffer for the running state.
+   \return  the injected total byte length.
+*/
+uint64_t br_sha256_state(const br_sha256_context *ctx, void *out);
 #else
-  #define br_sha256_state       br_sha224_state
+#define br_sha256_state       br_sha224_state
 #endif
 
 #ifdef BR_DOXYGEN_IGNORE
-  /**
-     \brief Restore SHA-256 running state.
-  
-     The running state for SHA-256 is set to the provided values.
-  
-     \param ctx     pointer to the context structure.
-     \param stb     source buffer for the running state.
-     \param count   the injected total byte length.
-  */
-  void br_sha256_set_state(br_sha256_context *ctx, const void *stb, uint64_t count);
+/**
+   \brief Restore SHA-256 running state.
+
+   The running state for SHA-256 is set to the provided values.
+
+   \param ctx     pointer to the context structure.
+   \param stb     source buffer for the running state.
+   \param count   the injected total byte length.
+*/
+void br_sha256_set_state(br_sha256_context *ctx, const void *stb, uint64_t count);
 #else
-  #define br_sha256_set_state   br_sha224_set_state
+#define br_sha256_set_state   br_sha224_set_state
 #endif
 
 /**
@@ -788,7 +788,7 @@ extern const br_hash_class br_sha384_vtable;
    First field is a pointer to the vtable; it is set by the initialisation
    function. Other fields are not supposed to be accessed by user code.
 */
-typedef struct 
+typedef struct
 {
   /**
      \brief Pointer to vtable for this context.
@@ -880,21 +880,21 @@ void br_sha384_set_state(br_sha384_context *ctx,
 extern const br_hash_class br_sha512_vtable;
 
 #ifdef BR_DOXYGEN_IGNORE
+/**
+   \brief SHA-512 context.
+
+   First field is a pointer to the vtable; it is set by the initialisation
+   function. Other fields are not supposed to be accessed by user code.
+*/
+typedef struct
+{
   /**
-     \brief SHA-512 context.
-  
-     First field is a pointer to the vtable; it is set by the initialisation
-     function. Other fields are not supposed to be accessed by user code.
+     \brief Pointer to vtable for this context.
   */
-  typedef struct 
-  {
-    /**
-       \brief Pointer to vtable for this context.
-    */
-    const br_hash_class *vtable;
-  } br_sha512_context;
+  const br_hash_class *vtable;
+} br_sha512_context;
 #else
-  typedef br_sha384_context br_sha512_context;
+typedef br_sha384_context br_sha512_context;
 #endif
 
 /**
@@ -908,20 +908,20 @@ extern const br_hash_class br_sha512_vtable;
 void br_sha512_init(br_sha512_context *ctx);
 
 #ifdef BR_DOXYGEN_IGNORE
-  /**
-     \brief Inject some data bytes in a running SHA-512 computation.
-  
-     The provided context is updated with some data bytes. If the number
-     of bytes (`len`) is zero, then the data pointer (`data`) is ignored
-     and may be `NULL`, and this function does nothing.
-  
-     \param ctx    pointer to the context structure.
-     \param data   pointer to the injected data.
-     \param len    injected data length (in bytes).
-  */
-  void br_sha512_update(br_sha512_context *ctx, const void *data, size_t len);
+/**
+   \brief Inject some data bytes in a running SHA-512 computation.
+
+   The provided context is updated with some data bytes. If the number
+   of bytes (`len`) is zero, then the data pointer (`data`) is ignored
+   and may be `NULL`, and this function does nothing.
+
+   \param ctx    pointer to the context structure.
+   \param data   pointer to the injected data.
+   \param len    injected data length (in bytes).
+*/
+void br_sha512_update(br_sha512_context *ctx, const void *data, size_t len);
 #else
-  #define br_sha512_update   br_sha384_update
+#define br_sha512_update   br_sha384_update
 #endif
 
 /**
@@ -939,36 +939,36 @@ void br_sha512_init(br_sha512_context *ctx);
 void br_sha512_out(const br_sha512_context *ctx, void *out);
 
 #ifdef BR_DOXYGEN_IGNORE
-  /**
-     \brief Save SHA-512 running state.
-  
-     The running state for SHA-512 (output of the last internal block
-     processing) is written in the buffer pointed to by `out`. The
-     number of bytes injected since the last initialisation or reset
-     call is returned. The context is not modified.
-  
-     \param ctx   pointer to the context structure.
-     \param out   destination buffer for the running state.
-     \return  the injected total byte length.
-  */
-  uint64_t br_sha512_state(const br_sha512_context *ctx, void *out);
+/**
+   \brief Save SHA-512 running state.
+
+   The running state for SHA-512 (output of the last internal block
+   processing) is written in the buffer pointed to by `out`. The
+   number of bytes injected since the last initialisation or reset
+   call is returned. The context is not modified.
+
+   \param ctx   pointer to the context structure.
+   \param out   destination buffer for the running state.
+   \return  the injected total byte length.
+*/
+uint64_t br_sha512_state(const br_sha512_context *ctx, void *out);
 #else
-  #define br_sha512_state   br_sha384_state
+#define br_sha512_state   br_sha384_state
 #endif
 
 #ifdef BR_DOXYGEN_IGNORE
-  /**
-     \brief Restore SHA-512 running state.
-  
-     The running state for SHA-512 is set to the provided values.
-  
-     \param ctx     pointer to the context structure.
-     \param stb     source buffer for the running state.
-     \param count   the injected total byte length.
-  */
-  void br_sha512_set_state(br_sha512_context *ctx, const void *stb, uint64_t count);
+/**
+   \brief Restore SHA-512 running state.
+
+   The running state for SHA-512 is set to the provided values.
+
+   \param ctx     pointer to the context structure.
+   \param stb     source buffer for the running state.
+   \param count   the injected total byte length.
+*/
+void br_sha512_set_state(br_sha512_context *ctx, const void *stb, uint64_t count);
 #else
-  #define br_sha512_set_state   br_sha384_set_state
+#define br_sha512_set_state   br_sha384_set_state
 #endif
 
 /*
@@ -1002,7 +1002,7 @@ extern const br_hash_class br_md5sha1_vtable;
    First field is a pointer to the vtable; it is set by the initialisation
    function. Other fields are not supposed to be accessed by user code.
 */
-typedef struct 
+typedef struct
 {
   /**
      \brief Pointer to vtable for this context.
@@ -1085,7 +1085,7 @@ void br_md5sha1_set_state(br_md5sha1_context *ctx,
    The `br_hash_compat_context` type is a type which is large enough to
    serve as context for all standard hash functions defined above.
 */
-typedef union 
+typedef union
 {
   const br_hash_class *vtable;
   br_md5_context md5;
@@ -1116,7 +1116,7 @@ typedef union
    Instead, it is configured with the vtables of the hash functions it
    should run. Structure fields are not supposed to be accessed directly.
 */
-typedef struct 
+typedef struct
 {
 #ifndef BR_DOXYGEN_IGNORE
   unsigned char buf[128];

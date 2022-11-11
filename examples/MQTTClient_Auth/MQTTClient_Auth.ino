@@ -1,10 +1,10 @@
 /****************************************************************************************************************************
   MQTTClient_Auth.ino
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
@@ -44,18 +44,18 @@ const char *subTopic  = "MQTT_Sub";               // Topic to subcribe to
 
 //IPAddress mqttServer(172, 16, 0, 2);
 
-void callback(char* topic, byte* payload, unsigned int length) 
+void callback(char* topic, byte* payload, unsigned int length)
 {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  
-  for (unsigned int i = 0; i < length; i++) 
-  {
-    Serial.print((char)payload[i]);
-  }
-  
-  Serial.println();
+	Serial.print("Message arrived [");
+	Serial.print(topic);
+	Serial.print("] ");
+
+	for (unsigned int i = 0; i < length; i++)
+	{
+		Serial.print((char)payload[i]);
+	}
+
+	Serial.println();
 }
 
 WiFiClient  wifiClient;
@@ -66,137 +66,142 @@ const char *pubData = data.c_str();
 
 void reconnect()
 {
-  // Loop until we're reconnected
-  while (!client.connected())
-  {
-    Serial.print("Attempting MQTT connection to ");
-    Serial.print(mqttServer);
+	// Loop until we're reconnected
+	while (!client.connected())
+	{
+		Serial.print("Attempting MQTT connection to ");
+		Serial.print(mqttServer);
 
-    // Attempt to connect
-    if (client.connect("arduino", "try", "try"))
-    {
-      Serial.println("...connected");
-      
-      // Once connected, publish an announcement...
-      client.publish(TOPIC, data.c_str());
+		// Attempt to connect
+		if (client.connect("arduino", "try", "try"))
+		{
+			Serial.println("...connected");
 
-      //Serial.println("Published connection message successfully!");
-      //Serial.print("Subcribed to: ");
-      //Serial.println(subTopic);
-      
-      client.subscribe(subTopic);
-      // for loopback testing
-      client.subscribe(TOPIC);
-    }
-    else
-    {
-      Serial.print("...failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
+			// Once connected, publish an announcement...
+			client.publish(TOPIC, data.c_str());
 
-      // Wait 5 seconds before retrying
-      delay(5000);
-    }
-  }
+			//Serial.println("Published connection message successfully!");
+			//Serial.print("Subcribed to: ");
+			//Serial.println(subTopic);
+
+			client.subscribe(subTopic);
+			// for loopback testing
+			client.subscribe(TOPIC);
+		}
+		else
+		{
+			Serial.print("...failed, rc=");
+			Serial.print(client.state());
+			Serial.println(" try again in 5 seconds");
+
+			// Wait 5 seconds before retrying
+			delay(5000);
+		}
+	}
 }
 
 void printWifiStatus()
 {
-  // print the SSID of the network you're attached to:
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
+	// print the SSID of the network you're attached to:
+	Serial.print("SSID: ");
+	Serial.println(WiFi.SSID());
 
-  // print your board's IP address:
-  IPAddress ip = WiFi.localIP();
-  Serial.print("Local IP Address: ");
-  Serial.println(ip);
+	// print your board's IP address:
+	IPAddress ip = WiFi.localIP();
+	Serial.print("Local IP Address: ");
+	Serial.println(ip);
 
-  // print your board's country code 
-  // #define CYW43_COUNTRY(A, B, REV) ((unsigned char)(A) | ((unsigned char)(B) << 8) | ((REV) << 16))
-  uint32_t myCountryCode = cyw43_arch_get_country_code(); 
-  char countryCode[3] = { 0, 0, 0 };
-  
-  countryCode[0] = myCountryCode & 0xFF;
-  countryCode[1] = (myCountryCode >> 8) & 0xFF;
+	// print your board's country code
+	// #define CYW43_COUNTRY(A, B, REV) ((unsigned char)(A) | ((unsigned char)(B) << 8) | ((REV) << 16))
+	uint32_t myCountryCode = cyw43_arch_get_country_code();
+	char countryCode[3] = { 0, 0, 0 };
 
-  Serial.print("Country code: "); Serial.println(countryCode);
+	countryCode[0] = myCountryCode & 0xFF;
+	countryCode[1] = (myCountryCode >> 8) & 0xFF;
+
+	Serial.print("Country code: ");
+	Serial.println(countryCode);
 }
 
 void setup()
 {
-  // Open serial communications and wait for port to open:
-  Serial.begin(115200);
-  while (!Serial && millis() < 5000);
+	// Open serial communications and wait for port to open:
+	Serial.begin(115200);
 
-  Serial.print("\nStart MQTTClient_Auth on "); Serial.print(BOARD_NAME);
-  Serial.print(" with "); Serial.println(SHIELD_TYPE);
-  Serial.println(ASYNCTCP_RP2040W_VERSION);
-  Serial.println(ASYNC_WEBSERVER_RP2040W_VERSION);
+	while (!Serial && millis() < 5000);
 
-  ///////////////////////////////////
-  
-  // check for the WiFi module:
-  if (WiFi.status() == WL_NO_MODULE)
-  {
-    Serial.println("Communication with WiFi module failed!");
-    // don't continue
-    while (true);
-  }
+	Serial.print("\nStart MQTTClient_Auth on ");
+	Serial.print(BOARD_NAME);
+	Serial.print(" with ");
+	Serial.println(SHIELD_TYPE);
+	Serial.println(ASYNCTCP_RP2040W_VERSION);
+	Serial.println(ASYNC_WEBSERVER_RP2040W_VERSION);
 
-  Serial.print(F("Connecting to SSID: "));
-  Serial.println(ssid);
+	///////////////////////////////////
 
-  status = WiFi.begin(ssid, pass);
+	// check for the WiFi module:
+	if (WiFi.status() == WL_NO_MODULE)
+	{
+		Serial.println("Communication with WiFi module failed!");
 
-  delay(1000);
-   
-  // attempt to connect to WiFi network
-  while ( status != WL_CONNECTED)
-  {
-    delay(500);
-        
-    // Connect to WPA/WPA2 network
-    status = WiFi.status();
-  }
+		// don't continue
+		while (true);
+	}
 
-  printWifiStatus();
+	Serial.print(F("Connecting to SSID: "));
+	Serial.println(ssid);
 
-  ///////////////////////////////////
-  
-  // Note - the default maximum packet size is 128 bytes. If the
-  // combined length of clientId, username and password exceed this use the
-  // following to increase the buffer size:
-  // client.setBufferSize(255);
+	status = WiFi.begin(ssid, pass);
+
+	delay(1000);
+
+	// attempt to connect to WiFi network
+	while ( status != WL_CONNECTED)
+	{
+		delay(500);
+
+		// Connect to WPA/WPA2 network
+		status = WiFi.status();
+	}
+
+	printWifiStatus();
+
+	///////////////////////////////////
+
+	// Note - the default maximum packet size is 128 bytes. If the
+	// combined length of clientId, username and password exceed this use the
+	// following to increase the buffer size:
+	// client.setBufferSize(255);
 }
 
 #define MQTT_PUBLISH_INTERVAL_MS       5000L
 
 unsigned long lastMsg = 0;
 
-void loop() 
+void loop()
 {
-  static unsigned long now;
-  
-  if (!client.connected()) 
-  {
-    reconnect();
-  }
+	static unsigned long now;
 
-  // Sending Data
-  now = millis();
-  
-  if (now - lastMsg > MQTT_PUBLISH_INTERVAL_MS)
-  {
-    lastMsg = now;
+	if (!client.connected())
+	{
+		reconnect();
+	}
 
-    if (!client.publish(TOPIC, pubData))
-    {
-      Serial.println("Message failed to send.");
-    }
+	// Sending Data
+	now = millis();
 
-    Serial.print("Message Send : " + String(TOPIC) + " => ");
-    Serial.println(data);
-  }
-  
-  client.loop();
+	if (now - lastMsg > MQTT_PUBLISH_INTERVAL_MS)
+	{
+		lastMsg = now;
+
+		if (!client.publish(TOPIC, pubData))
+		{
+			Serial.println("Message failed to send.");
+		}
+
+		Serial.print("Message Send : " + String(TOPIC) + " => ");
+		Serial.println(data);
+	}
+
+	client.loop();
 }

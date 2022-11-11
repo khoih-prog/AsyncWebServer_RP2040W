@@ -2,8 +2,8 @@
 //HTML code for webpage
 //=====================
 
-const char webpageCont[] PROGMEM = 
-R"=====(
+const char webpageCont[] PROGMEM =
+  R"=====(
 <!DOCTYPE HTML>
 <html>
 <title>RP2040W AsyncSocketServer</title>

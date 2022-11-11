@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   AsyncWebHandlerImpl_RP2040W.h
-  
+
   For RP2040W with CYW43439 WiFi
-  
+
   AsyncWebServer_RP2040W is a library for the RP2040W with CYW43439 WiFi
-  
+
   Based on and modified from ESPAsyncWebServer (https://github.com/me-no-dev/ESPAsyncWebServer)
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
- 
-  Version: 1.4.0
-  
+
+  Version: 1.4.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
@@ -24,6 +24,7 @@
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
+  1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
  *****************************************************************************************************************************/
 
 #pragma once
@@ -98,7 +99,8 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
     bool _isRegex;
 
   public:
-    AsyncCallbackWebHandler() : _uri(), _method(HTTP_ANY), _onRequest(NULL), _onUpload(NULL), _onBody(NULL), _isRegex(false) {}
+    AsyncCallbackWebHandler() : _uri(), _method(HTTP_ANY), _onRequest(NULL), _onUpload(NULL), _onBody(NULL),
+      _isRegex(false) {}
 
     /////////////////////////////////////////////////
 
@@ -147,6 +149,7 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
         return false;
 
 #ifdef ASYNCWEBSERVER_REGEX
+
       if (_isRegex)
       {
         std::regex pattern(_uri.c_str());
@@ -196,7 +199,8 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
 
     /////////////////////////////////////////////////
 
-    virtual void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) override final
+    virtual void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index,
+                            size_t total) override final
     {
       if (_onBody)
         _onBody(request, data, len, index, total);
