@@ -88,14 +88,16 @@
   * [ 8. **MQTT_ThingStream**](examples/MQTT_ThingStream)
   * [ 9. WebClient](examples/WebClient)
   * [10. WebClientRepeating](examples/WebClientRepeating)
-  * [11. Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
-  * [12. Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
-  * [13. Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
-  * [14. Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
-  * [15. Async_WebSocketsServer](examples/Async_WebSocketsServer) **New**
-  * [16. Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme) **New**
+  * [11. Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country)
+  * [12. Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon)
+  * [13. Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString)
+  * [14. Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString)
+  * [15. Async_WebSocketsServer](examples/Async_WebSocketsServer)
+  * [16. Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme)
   * [17. AsyncFSWebServer](examples/AsyncFSWebServer) **New**
   * [18. AsyncFSWebServer_Complex](examples/AsyncFSWebServer_Complex) **New**
+  * [19. Async_AdvancedWebServer_SendChunked](examples/Async_AdvancedWebServer_SendChunked) **New**
+  * [20. AsyncWebServer_SendChunked](examples/AsyncWebServer_SendChunked) **New**
 * [Example Async_AdvancedWebServer](#Example-Async_AdvancedWebServer)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. Async_AdvancedWebServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#1-Async_AdvancedWebServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
@@ -109,6 +111,8 @@
   * [9. Async_WebSocketsServer on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#9-Async_WebSocketsServer-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [10. Async_WebSocketsServer_Xtreme on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#10-Async_WebSocketsServer_Xtreme-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
   * [11. AsyncFSWebServer_Complex on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#11-AsyncFSWebServer_Complex-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
+  * [12. Async_AdvancedWebServer_SendChunked on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#12-Async_AdvancedWebServer_SendChunked-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
+  * [13. AsyncWebServer_SendChunked on RASPBERRY_PI_PICO_W using CYW43439 WiFi](#13-AsyncWebServer_SendChunked-on-RASPBERRY_PI_PICO_W-using-CYW43439-WiFi)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
@@ -132,7 +136,7 @@ Check these new examples
 2. [AsyncFSWebServer_Complex](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncFSWebServer_Complex)
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/AsyncFSWebServer_Complex.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/AsyncFSWebServer_Complex.png">
 </p>
 
 ---
@@ -244,7 +248,7 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 1. **RASPBERRY_PI_PICO_W with CYW43439 WiFi** using [**arduino-pico core v2.4.0+**](https://github.com/earlephilhower/arduino-pico)
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/RP2040W-pinout.svg">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/RP2040W-pinout.svg">
 </p>
 
 ---
@@ -253,7 +257,7 @@ to apply the better and faster **asynchronous** feature of the **powerful** [ESP
 ## Prerequisites
 
  1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
- 2. [`Earle Philhower's arduino-pico core v2.6.1+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
+ 2. [`Earle Philhower's arduino-pico core v2.6.3+`](https://github.com/earlephilhower/arduino-pico) for **RASPBERRY_PI_PICO_W with CYW43439 WiFi**, etc. [![GitHub release](https://img.shields.io/github/release/earlephilhower/arduino-pico.svg)](https://github.com/earlephilhower/arduino-pico/releases/latest)
  3. [`AsyncTCP_RP2040W library v1.1.0+`](https://github.com/khoih-prog/AsyncTCP_RP2040W) for RASPBERRY_PI_PICO_W with CYW43439 WiFi. [![GitHub release](https://img.shields.io/github/release/khoih-prog/AsyncTCP_RP2040W.svg)](https://github.com/khoih-prog/AsyncTCP_RP2040W/releases/latest)
 
 ---
@@ -1172,7 +1176,7 @@ if (!!window.EventSource)
 Server goes through handlers in same order as they were added. You can't simple add handler with same path to override them.
 To remove handler:
 
-```arduino
+```cpp
 // save callback for particular URL path
 auto handler = server.on("/some/path", [](AsyncWebServerRequest *request){
   //do something useful
@@ -1494,6 +1498,7 @@ For Arduino IDE create/update `platform.local.txt`:
 `Linux`: ~/.arduino15/packages/`{xxxx}`/hardware/`{xxxx}`/`{version}`/platform.local.txt
 
 Add/Update the following line:
+
 ```
   compiler.cpp.extra_flags=-DDASYNCWEBSERVER_REGEX
 ```
@@ -1524,14 +1529,17 @@ build_flags =
  8. [**MQTT_ThingStream**](examples/MQTT_ThingStream)
  9. [WebClient](examples/WebClient)
 10. [WebClientRepeating](examples/WebClientRepeating)
-11. [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country) **New**
-12. [Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon) **New**
-13. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString) **New**
-14. [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString) **New**
-15. [Async_WebSocketsServer](examples/Async_WebSocketsServer) **New**
-16. [Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme) **New**
+11. [Async_AdvancedWebServer_Country](examples/Async_AdvancedWebServer_Country)
+12. [Async_AdvancedWebServer_favicon](examples/Async_AdvancedWebServer_favicon)
+13. [Async_AdvancedWebServer_MemoryIssues_SendArduinoString](examples/Async_AdvancedWebServer_MemoryIssues_SendArduinoString)
+14. [Async_AdvancedWebServer_MemoryIssues_Send_CString](examples/Async_AdvancedWebServer_MemoryIssues_Send_CString)
+15. [Async_WebSocketsServer](examples/Async_WebSocketsServer)
+16. [Async_WebSocketsServer_Xtreme](examples/Async_WebSocketsServer_Xtreme)
 17. [AsyncFSWebServer](examples/AsyncFSWebServer) **New**
 18. [AsyncFSWebServer_Complex](examples/AsyncFSWebServer_Complex) **New**
+19. [Async_AdvancedWebServer_SendChunked](examples/Async_AdvancedWebServer_SendChunked) **New**
+20. [AsyncWebServer_SendChunked](examples/AsyncWebServer_SendChunked) **New**
+
 
 
 ---
@@ -1539,12 +1547,12 @@ build_flags =
 
 ### Example [Async_AdvancedWebServer](examples/Async_AdvancedWebServer)
 
-https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/740a15bfd9a82674a47204d11c47fe317815aea1/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L281
+https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/2d2f55326766dc79340d906d6a4a386e4291e74e/examples/Async_AdvancedWebServer/Async_AdvancedWebServer.ino#L41-L299
 
 You can access the Async Advanced WebServer @ the server IP
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer.png">
 </p>
 
 ---
@@ -1560,7 +1568,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer](e
 ```
 Start Async_AdvancedWebServer on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1571,7 +1579,7 @@ HTTP EthernetWebServer is @ IP : 192.168.2.180
 ```
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer.png">
 </p>
 
 ---
@@ -1584,7 +1592,7 @@ Following is debug terminal output when running example [WebClient](examples/Web
 ```
 Start WebClient on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1662,7 +1670,7 @@ Following is debug terminal output when running example [MQTTClient_Auth](exampl
 ```
 Start MQTTClient_Auth on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1684,7 +1692,7 @@ Following is debug terminal output when running example [MQTTClient_Basic](examp
 ```
 Start MQTTClient_Basic on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1706,7 +1714,7 @@ Following is debug terminal output when running example [MQTT_ThingStream](examp
 ```
 Start MQTT_ThingStream on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1734,7 +1742,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_Co
 ```
 Start Async_AdvancedWebServer_Country on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.180
@@ -1744,19 +1752,19 @@ HTTP EthernetWebServer is @ IP : 192.168.2.180
 ```
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Country.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer_Country.png">
 </p>
 
 ##### Chrome, Vivaldi and Firefox running simultaneously
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Country_Multi.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer_Country_Multi.png">
 </p>
 
 ##### Only Firefox running
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Country_Firefox.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer_Country_Firefox.png">
 </p>
 
 
@@ -1770,7 +1778,7 @@ Following is the debug terminal when running example [Async_AdvancedWebServer_fa
 ```
 14:22:06.632 -> Start Async_AdvancedWebServer_favicon on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 14:22:06.632 -> AsyncTCP_RP2040W v1.1.0
-14:22:06.632 -> AsyncWebServer_RP2040W v1.3.1
+14:22:06.632 -> AsyncWebServer_RP2040W v1.4.1
 14:22:06.632 -> Connecting to SSID: HueNet1
 14:22:13.328 -> SSID: HueNet1
 14:22:13.328 -> Local IP Address: 192.168.2.180
@@ -1785,13 +1793,13 @@ You can see the `favicon.ico` at the upper left corner
 ##### On Chrome
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_favicon.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer_favicon.png">
 </p>
 
 ##### On Firefox
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_Firefox_favicon.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer_Firefox_favicon.png">
 </p>
 
 ---
@@ -1807,7 +1815,7 @@ Following is the debug terminal and screen shot when running example [Async_Adva
 ```
 Start Async_AdvancedWebServer_MemoryIssues_Send_CString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.74
@@ -1834,7 +1842,7 @@ While using Arduino String, the HEAP usage is very large
 ```
 Start Async_AdvancedWebServer_MemoryIssues_SendArduinoString on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.74
@@ -1858,7 +1866,7 @@ Out String Length=31247
 You can access the Async Advanced WebServers at the displayed server IP, e.g. `192.168.2.74`
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_AdvancedWebServer_MemoryIssues_Send_CString.png">
 </p>
 
 
@@ -1872,7 +1880,7 @@ Following is debug terminal output when running example [Async_WebSocketsServer]
 ```
 Starting Async_WebSocketsServer on RASPBERRY_PI_PICO_W
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.77
@@ -1907,7 +1915,7 @@ ws[Server: /ws][ClientID: 2] text-message[len: 13]: Hello, Server
 You can access the Async_WebSockets Servers at the displayed server IP, e.g. `192.168.2.77`
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_WebSocketsServer.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_WebSocketsServer.png">
 </p>
 
 ---
@@ -1921,7 +1929,7 @@ Following is debug terminal output when running example [Async_WebSocketsServer_
 ```
 Starting Async_WebSocketsServer_Xtreme on RASPBERRY_PI_PICO_W
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.3.1
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.77
@@ -1931,7 +1939,7 @@ Local IP Address: 192.168.2.77
 You can access the Async_WebSockets Servers at the displayed server IP, e.g. `192.168.2.77`
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/Async_WebSocketsServer_Xtreme.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/Async_WebSocketsServer_Xtreme.png">
 </p>
 
 
@@ -1946,7 +1954,7 @@ Following is debug terminal output when running example [AsyncFSWebServer_Comple
 ```
 Start AsyncFSWebServer_Complex on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
 AsyncTCP_RP2040W v1.1.0
-AsyncWebServer_RP2040W v1.4.0
+AsyncWebServer_RP2040W v1.4.1
 Connecting to SSID: HueNet1
 SSID: HueNet1
 Local IP Address: 192.168.2.77
@@ -1964,15 +1972,109 @@ FS File: js, size: 0B
 AsyncWebServer started @192.168.2.77
 Open http://192.168.2.77/edit to see the file browser
 AsyncFSEditor::handleRequest: Sending AsyncWebServerResponse
-
 ```
 
 
 You can access the Async_WebSockets Servers at the displayed server IP, e.g. `192.168.2.77`
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/blob/main/pics/AsyncFSWebServer_Complex.png">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/AsyncFSWebServer_Complex.png">
 </p>
+
+
+---
+
+
+#### 12. Async_AdvancedWebServer_SendChunked on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is debug terminal output when running example [Async_AdvancedWebServer_SendChunked](examples/Async_AdvancedWebServer_SendChunked) on RASPBERRY_PI_PICO_W using CYW43439 WiFi, to demo how to use `beginChunkedResponse()` to send large `html` in chunks
+
+
+```
+Start Async_AdvancedWebServer_SendChunked on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.4.1
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.77
+Country code: XX
+AsyncWebServer is @ IP : 192.168.2.77
+.[AWS] Total length to send in chunks = 31259
+[AWS] Bytes sent in chunk = 11556
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 8031
+[AWS] Bytes sent in chunk = 0
+[AWS] Total length to send in chunks = 31279
+[AWS] Bytes sent in chunk = 11556
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 8051
+[AWS] Bytes sent in chunk = 0
+```
+
+
+You can access the AsyncWebServer_RP2040W at the displayed server IP, e.g. `192.168.2.77`
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/AsyncWebServer_RP2040W/raw/main/pics/AsyncWebServer_SendChunked.png">
+</p>
+
+
+---
+
+
+#### 13. AsyncWebServer_SendChunked on RASPBERRY_PI_PICO_W using CYW43439 WiFi
+
+Following is debug terminal output when running example [AsyncWebServer_SendChunked](examples/AsyncWebServer_SendChunked) on RASPBERRY_PI_PICO_W using CYW43439 WiFi, to demo how to use `beginChunkedResponse()` to send large `html` in chunks
+
+
+```
+Start AsyncWebServer_SendChunked on RASPBERRY_PI_PICO_W with RP2040W CYW43439 WiFi
+AsyncTCP_RP2040W v1.1.0
+AsyncWebServer_RP2040W v1.4.1
+Connecting to SSID: HueNet1
+SSID: HueNet1
+Local IP Address: 192.168.2.77
+Country code: XX
+AsyncWebServer is @ IP : 192.168.2.77
+.[AWS] Total length to send in chunks = 47387
+[AWS] Bytes sent in chunk = 11560
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 811
+[AWS] Bytes sent in chunk = 0
+.[AWS] Total length to send in chunks = 47387
+[AWS] Bytes sent in chunk = 11560
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 811
+[AWS] Bytes sent in chunk = 0
+[AWS] Total length to send in chunks = 47387
+[AWS] Bytes sent in chunk = 11560
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 811
+[AWS] Bytes sent in chunk = 0
+.[AWS] Total length to send in chunks = 47387
+[AWS] Bytes sent in chunk = 11560
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 811
+[AWS] Bytes sent in chunk = 0
+[AWS] Total length to send in chunks = 47387
+[AWS] Bytes sent in chunk = 11560
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 11672
+[AWS] Bytes sent in chunk = 811
+[AWS] Bytes sent in chunk = 0
+.[AWS] Total length to send in chunks = 47387
+[AWS] Bytes sent in chunk = 11560
+...... ...
+```
 
 
 ---
@@ -2021,7 +2123,7 @@ Submit issues to: [AsyncWebServer_RP2040W issues](https://github.com/khoih-prog/
  8. Fix `crash` when using `AsyncWebSockets server` and add example [Async_WebSocketsServer](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer) to demo the AsyncWebSockets Server with a Python [WSClient.py](examples/Async_WebSocketsServer/WSClient_Python/WSClient.py)
  9. Improve robustness of AsyncWebSockets server. Check [AsyncWebSocketServer_RP2040W crashes with "[AWS] ERROR: Too many messages queued" #6](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/6) and add example [Async_WebSocketsServer_Xtreme](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_WebSocketsServer_Xtreme) to demo the nearly highest possible WebSockets Server speed 
 10. Add `LittleFS` functions such as `AsyncFSWebServer`
-
+11. Add examples [Async_AdvancedWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_SendChunked) and [AsyncWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncWebServer_SendChunked) to demo how to use `beginChunkedResponse()` to send large `html` in chunks
 
 ---
 ---
