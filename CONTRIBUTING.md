@@ -10,12 +10,14 @@ However, before reporting a bug please check through the following:
 
 If you don't find anything, please [open a new issue](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/new).
 
+---
+
 ### How to submit a bug report
 
 Please ensure to specify the following:
 
 * Arduino IDE version (e.g. 1.8.19) or Platform.io version
-* `RP2040` Core Version (e.g. RP2040 core v2.6.3)
+* `RP2040` Core Version (e.g. RP2040 core v2.7.1)
 * `RP2040` Board type (e.g. RASPBERRY_PI_PICO_W)
 * Contextual information (e.g. what you were trying to achieve)
 * Simplest possible steps to reproduce
@@ -24,14 +26,18 @@ Please ensure to specify the following:
   * Network configuration
 
 
+Please be educated, civilized and constructive as you've always been. Disrespective posts against [GitHub Code of Conduct](https://docs.github.com/en/site-policy/github-terms/github-event-code-of-conduct) will be ignored and deleted.
+
+---
+
 ### Example
 
 ```
 Arduino IDE version: 1.8.19
-RP2040 core v2.6.3
+RP2040 core v2.7.1
 RASPBERRY_PI_PICO_W Module
 OS: Ubuntu 20.04 LTS
-Linux xy-Inspiron-3593 5.15.0-52-generic #58~20.04.1-Ubuntu SMP Thu Oct 13 13:09:46 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
+Linux xy-Inspiron-3593 5.15.0-58-generic #64~20.04.1-Ubuntu SMP Fri Jan 6 16:42:31 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
 
 Context:
 I encountered a crash while using this library

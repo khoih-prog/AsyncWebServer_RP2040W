@@ -8,12 +8,14 @@
 <a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
 <a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
 
+
 ---
 ---
 
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.4.2](#Release-v142)
   * [Release v1.4.1](#Release-v141)
   * [Release v1.4.0](#Release-v140)
   * [Release v1.3.1](#Release-v131)
@@ -33,11 +35,15 @@
 
 ## Changelog
 
+#### Release v1.4.2
+
+1. Add examples [Async_AdvancedWebServer_SendChunked_MQTT](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_SendChunked_MQTT) and [AsyncWebServer_MQTT_RP2040W](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncWebServer_MQTT_RP2040W) to demo how to use `AsyncWebServer_RP2040W` and `AsyncMQTT_Generic` libraries together
+2. Improve `README.md` so that links can be used in other sites, such as `PIO`
+
 #### Release v1.4.1
 
 1. Add examples [Async_AdvancedWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/Async_AdvancedWebServer_SendChunked) and [AsyncWebServer_SendChunked](https://github.com/khoih-prog/AsyncWebServer_RP2040W/tree/main/examples/AsyncWebServer_SendChunked) to demo how to use `beginChunkedResponse()` to send large `html` in chunks
 2. Use `allman astyle` and add `utils`
-
 
 #### Release v1.4.0
 

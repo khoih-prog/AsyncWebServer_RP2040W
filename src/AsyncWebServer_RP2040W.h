@@ -9,7 +9,7 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
 
-  Version: 1.4.1
+  Version: 1.4.2
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -25,6 +25,7 @@
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
   1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
+  1.4.2   K Hoang      28/01/2023 Add Async_AdvancedWebServer_SendChunked_MQTT and AsyncWebServer_MQTT_RP2040W examples
  *****************************************************************************************************************************/
 
 #ifndef _RP2040W_ASYNC_WEBSERVER_H_
@@ -40,13 +41,13 @@
 
 /////////////////////////////////////////////////
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.4.1"
+#define ASYNC_WEBSERVER_RP2040W_VERSION           "AsyncWebServer_RP2040W v1.4.2"
 
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MAJOR     1
 #define ASYNC_WEBSERVER_RP2040W_VERSION_MINOR     4
-#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     1
+#define ASYNC_WEBSERVER_RP2040W_VERSION_PATCH     2
 
-#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1004001
+#define ASYNC_WEBSERVER_RP2040W_VERSION_INT       1004002
 
 /////////////////////////////////////////////////
 
