@@ -15,6 +15,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.5.0](#Release-v150)
   * [Release v1.4.2](#Release-v142)
   * [Release v1.4.1](#Release-v141)
   * [Release v1.4.0](#Release-v140)
@@ -34,6 +35,10 @@
 ---
 
 ## Changelog
+
+#### Release v1.5.0
+
+1. Fix `_catchAllHandler` not working bug. Check [catchAll handler not working #12](https://github.com/khoih-prog/AsyncWebServer_RP2040W/issues/12)
 
 #### Release v1.4.2
 

@@ -9,23 +9,18 @@
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncWebServer_RP2040W
   Licensed under GPLv3 license
 
-  Version: 1.4.2
+  Version: 1.5.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      13/08/2022 Initial coding for RP2040W with CYW43439 WiFi
-  1.0.1   K Hoang      15/08/2022 Fix bug in examples, `library.json`
-  1.0.2   K Hoang      15/08/2022 Fix LED bug in examples
-  1.0.3   K Hoang      22/09/2022 To display country-code and tempo method to modify in arduino-pico core
-  1.1.0   K Hoang      25/09/2022 Fix issue with slow browsers or network
-  1.1.2   K Hoang      26/09/2022 Add function and example to support favicon.ico
-  1.2.0   K Hoang      03/10/2022 Option to use cString instead of String to save Heap
-  1.2.1   K Hoang      05/10/2022 Don't need memmove(), String no longer destroyed
+  ...
   1.3.0   K Hoang      10/10/2022 Fix crash when using AsyncWebSockets server
   1.3.1   K Hoang      10/10/2022 Improve robustness of AsyncWebSockets server
   1.4.0   K Hoang      20/10/2022 Add LittleFS functions such as AsyncFSWebServer
   1.4.1   K Hoang      10/11/2022 Add examples to demo how to use beginChunkedResponse() to send in chunks
   1.4.2   K Hoang      28/01/2023 Add Async_AdvancedWebServer_SendChunked_MQTT and AsyncWebServer_MQTT_RP2040W examples
+  1.5.0   K Hoang      30/01/2023 Fix _catchAllHandler not working bug
  *****************************************************************************************************************************/
 
 #pragma once
@@ -142,13 +137,17 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
     /////////////////////////////////////////////////
 
     virtual bool canHandle(AsyncWebServerRequest *request) override final
-    {
+    {     
       if (!_onRequest)
+      {        
         return false;
+      }  
 
       if (!(_method & request->method()))
+      {        
         return false;
-
+      }  
+        
 #ifdef ASYNCWEBSERVER_REGEX
 
       if (_isRegex)
@@ -156,7 +155,7 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
         std::regex pattern(_uri.c_str());
         std::smatch matches;
         std::string s(request->url().c_str());
-
+        
         if (std::regex_search(s, matches, pattern))
         {
           for (size_t i = 1; i < matches.size(); ++i)
@@ -172,17 +171,27 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
       }
       else
 #endif
-        if (_uri.length() && _uri.endsWith("*"))
-        {
-          String uriTemplate = String(_uri);
-          uriTemplate = uriTemplate.substring(0, uriTemplate.length() - 1);
-
-          if (!request->url().startsWith(uriTemplate))
-            return false;
-        }
-        else if (_uri.length() && (_uri != request->url() && !request->url().startsWith(_uri + "/")))
+      if (_uri.length() && _uri.startsWith("/*.")) 
+      {
+         String uriTemplate = String (_uri);
+         uriTemplate = uriTemplate.substring(uriTemplate.lastIndexOf("."));
+                  
+         if (!request->url().endsWith(uriTemplate))
+           return false;
+      }
+      else if (_uri.length() && _uri.endsWith("*"))
+      {
+        String uriTemplate = String(_uri);
+        uriTemplate = uriTemplate.substring(0, uriTemplate.length() - 1);
+        
+        if (!request->url().startsWith(uriTemplate))
           return false;
-
+      }
+      else if (_uri.length() && (_uri != request->url() && !request->url().startsWith(_uri + "/")))
+      {        
+        return false;
+      }  
+        
       request->addInterestingHeader("ANY");
 
       return true;
@@ -191,11 +200,22 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
     /////////////////////////////////////////////////
 
     virtual void handleRequest(AsyncWebServerRequest *request) override final
-    {
+    {      
       if (_onRequest)
+      {        
         _onRequest(request);
+      }  
       else
         request->send(500);
+    }
+
+    /////////////////////////////////////////////////
+    
+    virtual void handleUpload(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, 
+                             size_t len, bool final) override final 
+    {
+      if(_onUpload)
+        _onUpload(request, filename, index, data, len, final);
     }
 
     /////////////////////////////////////////////////
